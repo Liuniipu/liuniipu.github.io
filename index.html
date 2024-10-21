@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-hant-TW">
+  <head>
+    <title>Liuniipu-home</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="liuniipu.css" />
+    <!-- Flatpickr的CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+      rel="stylesheet"
+    />
+    <!-- 字體效果 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+    <style>
+      /*  */
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <!-- 固定在頂部 -->
+      <div class="navbar percent">
+        <div class="logo">GO</div>
+
+        <ul class="nav-item">
+          
+          <li><a href="#home">歡迎，這裡是宏義的展示空間</a></li>
+          <li><a href="#guide">效果集</a></li>
+          <li><a href="#game">互動集</a></li>
+          <li><a href="#info">個人檔案</a></li>
+        </ul>
+
+        <!--menu for mb -->
+        <div class="navbar-menu">
+          <button class="menu-button">☰</button>
+        </div>
+        <div class="mail"></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="wave -one"></div>
+          <div class="wave -two"></div>
+          <div class="wave -three"></div>
+        </div>
+      </div>
+    </header>
+    <main>
+      
+
+      <div class="home part container-fluid" id="home">
+        <ul class="slider"></ul>
+        <nav class="c2-nav">
+          <button class="btn prev">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+              <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+            </svg>
+          </button>
+          <button class="btn next">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+              <path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/>
+            </svg>
+          </button>
+        </nav>
+      </div>
+
+      <!-- 效果集 -->
+      <div class="guide part container-fluid" id="guide">
+      
+<div class="row">
+
+        <!-- 翻面驗證表單 -->
+        <div
+          class="card flip-card  col-md-3 col-sm-8 animate-box"
+          onclick="showFunction('formCheckArea')"
+          data-animate="animate__rubberBand"
+        >
+          <div class="flip-container">
+            <div class="flip-front">
+              <div class="flip-text">滑鼠移入會翻轉 <br>
+              hover to flip</div>
+            </div>
+            <div class="flip-back">
+              <div class="flip-text">點擊看示範表單</div>
+              <!-- 生成表單 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 浮出計算機 -->
+        <div
+          class="card switch-card col-md-3 col-sm-8 animate-box"
+          onclick="showFunction('calculatorArea')"
+          data-animate="animate__rubberBand"
+        >
+          <div class="switch-container">
+            <div class="switch-cover">
+              <div class="switch-text">滑鼠移入會淡入 <br>
+                hover to fade in
+              </div>
+            </div>
+            <div class="switch-content">
+              <div class="switch-text">點擊使用計算機</div>
+              <!-- 生成計算機 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 簡介日期計算 -->
+        <div
+          class="card part-card col-md-3 col-sm-8 animate-box"
+          onclick="showFunction('dateArea')"
+          data-animate="animate__rubberBand"
+        >
+          <!-- 生成計算日期 -->
+
+          <div class="card-preview">
+            <!-- <img src="" alt="Card Image" /> -->
+            <div class="glow-ball"></div>
+          </div>
+          <div class="card-description">
+            滑鼠移入有追蹤，點擊可以數日子。
+          </div>
+        </div>
+      </div>
+
+        <!-- 功能展示區域 -->
+        <div id="modal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeFunction()">&times;</span>
+            <div id="function-content"></div>
+          </div>
+        </div>
+
+        <!-- 泡泡背景 -->
+        <div class="gradient-bg">
+          <svg xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="goo">
+                <feGaussianBlur
+                  in="SourceGraphic"
+                  stdDeviation="10"
+                  result="blur"
+                />
+                <feColorMatrix
+                  in="blur"
+                  mode="matrix"
+                  values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"
+                  result="goo"
+                />
+                <feBlend in="SourceGraphic" in2="goo" />
+              </filter>
+            </defs>
+          </svg>
+          <div class="gradients-container">
+            <div class="g1"></div>
+            <div class="g2"></div>
+            <div class="g3"></div>
+            <div class="g4"></div>
+            <div class="g5"></div>
+            <div class="interactive"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 互動集 -->
+      <!-- 小遊戲：轉輪盤、接接樂、上傳編輯下載圖片 -->
+      <div class="game part container-fluid" id="game">
+        <div class="sidebar " >
+          <ul>
+            <li class="animate-box" data-animate="animate__flipInY"><button onclick="showContent(0)" >簡介</button></li>
+            <li class="animate-box" data-animate="animate__flipInY"><button onclick="showContent(1)" >轉輪盤</button></li>
+            <li class="animate-box" data-animate="animate__flipInY"><button onclick="showContent(2)" >圖片工作室</button></li>
+            <li class="animate-box" data-animate="animate__flipInY"><button onclick="showContent(3)" >coming soon</button></li>
+          </ul>
+        </div>
+
+        <div class="main-content" id="mainContent">
+          <div class="content active">
+            <h2 class="d-flex m-5">說明</h2>
+            <div class="content-note container">
+
+              <div class="row">
+<div class="col-md-3">
+  <h3>轉輪盤</h3>
+  <section>
+    以顏色區辨別選項，藉由按鍵新增、刪除選項，<br>
+    用戶可以填入想要抽選的項目，享受轉輪盤的樂趣。
+  </section>
+</div>
+<div class="col-md-3">
+  <h3>圖片工作室</h3>
+                <section>
+                  用戶可以上傳想要擺放的圖片，<br>
+                  在此簡單的工作室儲存擺放的結果。
+                </section>
+</div>
+<div class="col-md-3">
+  <h3>COMING SOON</h3>
+                <section>
+                  於多樣化的網路介面環境中，<br>
+                  期待未來環境提供的靈感。
+                </section>
+              </div>
+</div>
+                
+                
+                
+          </div>
+          </div>
+
+
+          <!-- 輪盤小遊戲 -->
+          <div class="content container">
+           
+              <div class="row ">
+                <div class="col-md-6 d-flex justify-content-center">
+            <div class="roulette-container">
+              <div id="pointer"></div>
+              <div id="wheel" class="wheel">
+
+              </div>
+              <div class="button-container">
+
+                <button id="spin-button">轉動輪盤</button>
+                <button id="add-option">新增選項</button>
+              </div>
+            </div>
+          </div>
+            <div class="col-md-6 d-flex ">
+            <div class="menu ">
+              <h3>今天吃什麼？</h3>
+              <ul id="option-list">
+                <li>
+                  <input type="text" value="便當" />
+                  <button class="remove-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#fff" d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/></svg>
+
+                  </button>
+                </li>
+                <li>
+                  <input type="text" value="乾麵" /><button class="remove-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#fff" d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/></svg>
+
+                  </button>
+                </li>
+                <li>
+                  <input type="text" value="速食" /><button class="remove-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#fff" d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/></svg>
+
+                  </button>
+                </li>
+                <li>
+                  <input type="text" value="滷味" /><button class="remove-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#fff" d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/></svg>
+
+                  </button>
+                </li>
+              </ul>
+             
+            </div>
+          </div>
+          </div>
+         
+          
+        </div>
+          <div class="content ">
+            <!-- 圖片工作室 -->
+            <!-- 上傳、儲存、上一步跟重做按鈕 -->
+            <div class="control">
+
+              <input type="file" id="upload" accept="image/*" multiple style="display: none;" />
+              <button id="addImage">新增圖片</button>
+              <button id="saveImage">儲存圖片</button>
+              <!-- <button id="undo">上一步</button> -->
+              <button id="clear">清空</button>
+             </div>
+           
+            <div class="work" id="canvasContainer">
+              <!-- <canvas id="canvas" width="700px" height="400px" ></canvas> -->
+              <div id="konva-container" class="konva-container"></div>
+            </div>
+
+           
+          </div>
+
+
+          <div class="content">
+            <h3 class="coming">COMING SOON</h3>
+          </div>
+        </div>
+
+        <!-- 漂浮背景 -->
+        <div class="area">
+          <ul class="circles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 履歷集 -->
+      <div class="info part container-fluid" id="info">
+        <div class="row toggleBtn">
+          <button type="button" class="btn" id="toggleFlip">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#fff" d="M0 224c0 17.7 14.3 32 32 32s32-14.3 32-32c0-53 43-96 96-96l160 0 0 32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9S320 19.1 320 32l0 32L160 64C71.6 64 0 135.6 0 224zm512 64c0-17.7-14.3-32-32-32s-32 14.3-32 32c0 53-43 96-96 96l-160 0 0-32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6l0-32 160 0c88.4 0 160-71.6 160-160z"/></svg>
+          </button>
+        </div>
+
+        <div class="container-fluid ">
+          <div
+            class="row box-row animate-box"
+            data-animate="animate__zoomIn"
+          >
+            <div class="box-container normal " data-flip-direction="left">
+              <div class="box-twoside box-to-left">
+                <div class="box-outside">
+                  <div class="outside-text">
+                    <h3>LIFE</h3>
+                    <span>用心生活<br />把握當下</span>
+                  </div>
+                </div>
+                <div class="box-inside box-right">
+                  <div class="inside-text profile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="box-container wide " data-flip-direction="top">
+              <div class="box-twoside box-to-top">
+                <div class="box-outside">
+                  <div class="outside-text">
+                    <h2>LANGUAGE</h2>
+                    <span>舉一反三、觸類旁通<br />善用工具，集思廣益</span>
+                  </div>
+                </div>
+                <div class="box-inside box-bottom">
+                  <div class="inside-text">
+                    <img src="img/mark-react.png" alt="react">
+                    <img src="img/mark-nextjs.png" alt="next">
+                    <img src="img/mark-nodejs.png" alt="node">
+                    <img src="img/mark-express.png" alt="express">
+                    <img src="img/mark-mysql.png" alt="mySQL">
+                    <img src="img/mark-html.png" alt="html">
+                    <img src="img/mark-css.png" alt="css">
+                    <img src="img/mark-javascript.png" alt="javaScript">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="row box-row animate-box"
+            data-animate="animate__zoomIn"
+          >
+            <div class="box-container wide " data-flip-direction="bottom">
+              <div class="box-twoside box-to-bottom">
+                <div class="box-outside">
+                  <div class="outside-text">
+                    <h2>STORY</h2>
+                    <span
+                      >凡走過必留下痕跡，
+                      <br />曾經經歷過的也都將成為成長的養分。</span
+                    >
+                  </div>
+                </div>
+                <div class="box-inside box-top">
+                  <div class="inside-text">您好，我是Hong-Yi，此網站的作者。 <br>
+                    於教育現場工作三年後，發覺自己的志向是多年前被迫放棄的程式語言。<br>
+                    藉由自行購書、網路影片學習之後，更毅然決然報名課程進修。
+                    在課程中擔任組長，與團隊同心協力完成以REACT、NODE以及mySQL建構的專案。
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="box-container normal " data-flip-direction="right">
+              <div class="box-twoside">
+                <div class="box-outside">
+                  <div class="outside-text">
+                    <h2>HOBBY</h2>
+                    <span>陶冶性靈<br>開拓視野</span>
+                  </div>
+                </div>
+                <div class="box-inside box-left">
+                  <div class="inside-text">
+                    攝影：<br>
+                    藉由構圖、光影，<br>
+                    記錄生活、培養美感。 <br></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 雲背景 -->
+        <div class="cloud-bg">
+          <div class="cloud large cloud-1">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud normal cloud-2">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud small cloud-3">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud tiny cloud-4">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud large cloud-5">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud normal cloud-6">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud small cloud-7">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud tiny cloud-8">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud small cloud-9">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud normal cloud-10">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud tiny cloud-11">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="cloud small cloud-12">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="footer container-fluid">
+<div class="row">
+  <div class="col">
+    <div class="resource">
+      <h3>資源</h3>
+      <div class="res">
+        <ul>
+          <li><a href="https://getbootstrap.com/">bootstrap5</a></li>
+          <li><a href="https://sweetalert2.github.io/">sweetalert2</a></li>
+          <li><a href="https://animate.style/">animate.css</a></li>
+          <li><a href="https://konvajs.org/index.html">Konva.js</a></li>
+          <li><a href="https://fontawesome.com/">fontawesome</a></li>
+        </ul>
+      </div>
+      <div class="res">
+        <ul>
+          
+          <li><a href="https://iconduck.com/">iconduck</a></li>
+          <li><a href="https://www.ispan.com.tw/">資展國際</a></li>
+          <li><a href="https://chatgpt.com/">chatGPT</a></li>
+          <li><a href="https://codepen.io/trending">codePen</a></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="col">
+    <div class="about">
+
+      <h3>關於</h3>
+      作者：HongYi <br>
+      信箱：chuanren54@gmail.com <br>
+      創建日期：2024/10/21 <br>
+      更新日期：2024/10/22 <br>
+    </div>
+  </div>
+</div>
+
+
+    </footer>
+    <!-- Bootstrap JavaScript Libraries -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+    <!-- CSS動畫跑入 -->
+    <script src="ani-css.js"></script>
+    <!-- 進度條 -->
+    <script src="nav.js"></script>
+
+    <!-- 輪播圖2 -->
+
+    <script src="carousel2.js"></script>
+
+    <!-- 部分卡片JS -->
+    <script src="partCard.js"></script>
+    <!-- 計算機 -->
+    <script src="calculator.js"></script>
+
+    <!-- 日曆 -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- 日期 -->
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script>
+    <!-- 日子計算器 -->
+    <script src="datecalculator.js"></script>
+    
+    <!-- 打開卡片 -->
+    <script src="showCard.js"></script>
+    
+    <!-- 表單 -->
+    <!-- <script src="formcheck.js"></script> -->
+    <!-- 互動集 -->
+    <script>
+      function showContent(index) {
+        const contents = document.querySelectorAll(".content");
+        const sidebarItems = document.querySelectorAll(".sidebar ul li");
+        contents.forEach((content, i) => {
+          content.classList.remove("active");
+          if (i === index) {
+            content.classList.add("active");
+          }
+        });
+
+        sidebarItems.forEach((item, i) => {
+    item.classList.remove("active");
+    if (i === index) {
+      item.classList.add("active");
+    }
+  });
+      }
+
+
+    </script>
+
+    <!-- 轉輪盤 -->
+    <script src="wheel.js"></script>
+
+    <!-- Fabric.js -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.1.0/fabric.all.min.js"></script> -->
+    <!-- 上傳下載 -->
+    <!-- <script src="editImg3.js"></script> -->
+    <!-- konva -->
+    <script src="https://cdn.jsdelivr.net/npm/konva@latest/konva.min.js"></script>
+    <!-- 圖片工作室JS -->
+     <script src="konva.js"></script>
+
+    <!-- sweetalert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- 翻轉toggle -->
+    <script src="box-toggle.js"></script>
+    <!-- 跳轉提示 -->
+     <script src="link.js"></script>
+  </body>
+</html>
