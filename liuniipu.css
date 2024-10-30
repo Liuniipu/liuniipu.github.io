@@ -52,6 +52,7 @@
   font-size: large;
   color: #ffffff;
   text-shadow: #000;
+  cursor: default;
 }
 
 .nav-item {
