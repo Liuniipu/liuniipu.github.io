@@ -1,0 +1,171 @@
+.page{
+    height: 2000px;
+    width: 100px;
+    /* background: #000; */
+}
+
+/* navbar進度條 */
+.percent {
+    background: #000000;
+    justify-content: space-between;
+    align-items: center;
+    /* position: sticky;  */
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+  }
+  
+  .logo {
+    margin-left: 10px;
+    padding: 2px;
+    border-radius: 50%;
+    /* flex: 1; */
+    z-index: 102;
+    background: #5451ff;
+    font-weight: 800;
+    font-size: large;
+    color: #ffffff;
+    text-shadow: #000;
+    cursor: default;
+  }
+  
+  .nav-item {
+    display: flex;
+    gap: 20px;
+    /* flex: 2;  */
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 102;
+    & li {
+      display: flex;
+      & a {
+        text-decoration: none;
+        color: #ffffff;
+        /* display: block; */
+  
+        position: relative;
+    display: inline-block;
+      }
+    }
+  }
+  
+  
+  
+  
+  .nav-item li a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: #5cffe4; /* 下劃線顏色 */
+    bottom: -2px;
+    left: 0;
+    transform: scaleX(0); /* 初始為隱藏狀態 */
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out; /* 動畫效果 */
+  }
+  
+  .nav-item li a:hover::after {
+    transform: scaleX(1); /* 懸停時顯示線條 */
+    transform-origin: bottom left;
+  }
+  
+  .navbar-menu {
+    display: none;
+  }
+  
+  .progress-container {
+    /* position: relative; */
+    /* position: absolute; */
+    top: 47px;
+    left: 0;
+    position: fixed;
+    width: 100%;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.458);
+    /* opacity: 0.2; */
+    /* overflow: visible; */
+    overflow: hidden;
+    z-index: 99;
+    backdrop-filter: blur(5px);
+  }
+  
+  .progress-bar {
+    /* position: absolute; */
+    position: relative;
+  
+    width: 0;
+    height: 100%;
+    background-color: #ffffff;
+    /* transition: width 0.1s ease-out; */
+    /* animation: liquidWave 1s infinite linear; */
+    /* display: flex; */
+    /* align-items: center;  */
+    transition: width 0.3s ease;
+    z-index: 100;
+    /* overflow: hidden; */
+  
+    overflow: visible;
+  }
+  
+  .wave {
+    opacity: 1;
+    position: absolute;
+    top: 50%;
+    left: 100%; /* 從進度條的右側開始 */
+    background: #47ddfa;
+    width: 500px;
+    height: 500px;
+    margin-left: -490px;
+    margin-top: -250px;
+    transform-origin: 50% 48%;
+    border-radius: 43%;
+    animation: drift 3000ms infinite linear;
+  }
+  
+  .wave.-two {
+    animation: drift 5000ms infinite linear;
+    opacity: 0.2;
+    background: yellow;
+  }
+  
+  .wave.-three {
+    animation: drift 7000ms infinite linear;
+    opacity: 0.1;
+    background: #a1e7ef;
+  }
+  
+  @keyframes drift {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+
+  /* RWD */
+
+  @media (max-width: 720px) {
+    .navbar-nav .nav-item {
+      margin: 0 auto;
+      text-align: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .icon-group {
+      order: 1;
+      margin-bottom: 10px;
+    }
+    .navbar-menu .navbar-collapse {
+      flex-direction: column;
+      align-items: start;
+    }
+  }

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- bs5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <header>
+        <!-- navbar -->
+        <div class="navbar percent navbar-expand-md">
+            <div class="container-fluid">
+              <!-- LOGO -->
+              <a href="#" class="navbar-brand">GO</a>
+        
+              <!-- 480px 以下顯示的選單按鈕 -->
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                ☰
+              </button>
+        
+              <!-- 主要選單 -->
+              <div class="collapse navbar-collapse" id="navbarMenu">
+                <ul class="navbar-nav me-auto">
+                  <li class="nav-item"><a class="nav-link" href="#home">導覽</a></li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#lang" id="langMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      技術
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="langMenu">
+                      <li><a class="dropdown-item" href="#react-next">React/Next</a></li>
+                      <li><a class="dropdown-item" href="#node-express">Node/Express</a></li>
+                    </ul>
+                  </li>
+                  <li class="nav-item"><a class="nav-link" href="#proj">方案</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#info">個人檔案</a></li>
+                </ul>
+              </div>
+        
+              <!-- 圖標（icon） -->
+              <div class="icon-group">
+                <div class="icon member"></div>
+                <div class="icon cart"></div>
+              </div>
+            </div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="wave -one"></div>
+              <div class="wave -two"></div>
+              <div class="wave -three"></div>
+            </div>
+          </div>
+      </header>
+
+    <!-- 導覽頁 -->
+<div class="page" id="main-content"></div>
+
+
+    <!-- Bootstrap JavaScript Libraries -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+        // 定義 hash 與內容的映射
+const routes = {
+  home: "<h1>Home</h1><p>導覽頁面內容</p>",
+  lang: "<h1>技術</h1><p>選擇技術方向。</p>",
+  "react-next": "<h1>React/Next</h1><p>前端詳細資訊。</p>",
+  "node-express": "<h1>Node/Express</h1><p>後端詳細資訊。</p>",
+  proj: "<h1>方案</h1><p>方案內容</p>",
+  info: "<h1>個人檔案</h1><p>你的個人檔案介紹</p>",
+};
+
+// 動態載入內容的函數
+function loadContent() {
+  const hash = location.hash.slice(1) || "home"; // 預設為 'home'
+  const content = routes[hash] || "<h1>404</h1><p>找不到頁面</p>";
+  document.getElementById("main-content").innerHTML = content;
+}
+
+// 監聽 hash 變化
+window.addEventListener("hashchange", loadContent);
+
+// 初次載入
+loadContent();
+    </script>
+
+     <!-- 進度條 -->
+     <script src="nav.js"></script>
+</body>
+</html>
