@@ -99,4 +99,4 @@ function autoSlide() {
   nextButton.click();  // 每次模擬點擊 "下一張" 按鈕
 }
 
-setInterval(autoSlide, 8000);  // 每5秒執行一次
+setInterval(autoSlide, 8000);  // 每8秒執行一次
