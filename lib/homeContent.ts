@@ -3,7 +3,8 @@ export type Locale = (typeof locales)[number];
 
 export type NavItem = {
   label: string;
-  href: string;
+  href?: string;
+  children?: readonly NavItem[];
 };
 
 export type Slide = {
@@ -26,11 +27,27 @@ export type ExampleProject = {
   highlights: readonly string[];
 };
 
+export type BrandCard = {
+  id: string;
+  name: string;
+  sector: string;
+  headline: string;
+  description: string;
+};
+
 export type LanguageStack = {
   id: string;
   name: string;
   focus: string;
   points: readonly string[];
+};
+
+export type PMTestimonial = {
+  id: string;
+  quote: string;
+  author: string;
+  role: string;
+  company: string;
 };
 
 export type ContactDetail = {
@@ -77,7 +94,34 @@ type HeroContent = {
 type ExamplesContent = {
   heading: string;
   description: string;
+  tryNowCta: string;
+  exploreMoreCta: string;
   projects: readonly ExampleProject[];
+};
+
+type ExamplesPageContent = {
+  hero: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    ctaLabel: string;
+    ctaHref: string;
+  };
+  brands: {
+    heading: string;
+    description: string;
+    items: readonly BrandCard[];
+  };
+  categories: {
+    heading: string;
+    label: string;
+    items: readonly string[];
+  };
+  testimonials: {
+    heading: string;
+    description: string;
+    items: readonly PMTestimonial[];
+  };
 };
 
 type LanguageContent = {
@@ -103,6 +147,7 @@ export type Dictionary = {
   navigation: NavigationContent;
   hero: HeroContent;
   examples: ExamplesContent;
+  examplesPage: ExamplesPageContent;
   language: LanguageContent;
   contact: ContactContent;
   footer: FooterContent;
@@ -119,7 +164,21 @@ const dictionaries: Record<Locale, Dictionary> = {
       brand: 'liuniipu',
       items: [
         { label: 'Home', href: '#home' },
-        { label: 'Example', href: '#example' },
+        {
+          label: 'Examples',
+          children: [
+            { label: 'Highlights', href: '#example' },
+            { label: 'Example library', href: '/en/examples' },
+          ],
+        },
+        {
+          label: 'Try Now',
+          children: [
+            { label: 'Market', href: '/en/try-now/market' },
+            { label: 'Intro', href: '/en/try-now/intro' },
+            { label: 'App', href: '/en/try-now/app' },
+          ],
+        },
         { label: 'Language', href: '#language' },
         { label: 'Contact', href: '#contact' },
       ],
@@ -202,6 +261,8 @@ const dictionaries: Record<Locale, Dictionary> = {
       heading: 'Example engagements',
       description:
         'Selected case studies spanning product dashboards, narrative intro pages, and companion apps focused on measurable impact.',
+      tryNowCta: 'Try now',
+      exploreMoreCta: 'Browse the example library',
       projects: [
         {
           id: 'market',
@@ -237,6 +298,115 @@ const dictionaries: Record<Locale, Dictionary> = {
           ],
         },
       ],
+    },
+    examplesPage: {
+      hero: {
+        eyebrow: 'Case study library',
+        title: 'Examples you can adapt in a sprint.',
+        description:
+          'Mock brands that show how the same design system flexes across markets and mediums.',
+        ctaLabel: 'Start a project',
+        ctaHref: '#contact',
+      },
+      brands: {
+        heading: 'Mock brands at a glance',
+        description:
+          'Each concept highlights a different customer journey while sharing the same component foundation.',
+        items: [
+          {
+            id: 'aurora-exchange',
+            name: 'Aurora Exchange',
+            sector: 'Fintech SaaS',
+            headline: 'Trading clarity for global teams',
+            description:
+              'Cross-market alerts, liquidity insights, and compliance-ready exports packaged in a calm, data-first interface.',
+          },
+          {
+            id: 'pulse-ledger',
+            name: 'Pulse Ledger',
+            sector: 'Payments platform',
+            headline: 'Revenue intelligence without spreadsheets',
+            description:
+              'Executive dashboards pair KPI storytelling with drill-down ledgers so finance leads can plan faster.',
+          },
+          {
+            id: 'nova-health',
+            name: 'NovaHealth Loop',
+            sector: 'Digital health',
+            headline: 'Care teams stay aligned in seconds',
+            description:
+              'Modular visit timelines surface triage decisions, follow ups, and goals for multidisciplinary clinics.',
+          },
+          {
+            id: 'linea-stories',
+            name: 'Linea Stories',
+            sector: 'Media publishing',
+            headline: 'Narratives launch with motion-first storytelling',
+            description:
+              'Interactive chapters blend typography, video, and ambient audio controls for editorial launch teams.',
+          },
+          {
+            id: 'orbit-mobility',
+            name: 'Orbit Mobility',
+            sector: 'Mobility marketplace',
+            headline: 'Scale rider trust at city speed',
+            description:
+              'Dynamic pricing guardrails, surge controls, and support macros keep operations ahead of demand.',
+          },
+          {
+            id: 'kindred-markets',
+            name: 'Kindred Markets',
+            sector: 'Community commerce',
+            headline: 'Shop-in-shop experiences with heart',
+            description:
+              'Personalized collections, loyalty tiers, and live service handoffs maintain neighborhood energy online.',
+          },
+        ],
+      },
+      categories: {
+        heading: 'Infinite web directions',
+        label: 'From prototypes to launch-ready journeys:',
+        items: [
+          'Market dashboards',
+          'Mobile companion apps',
+          'One-page launch sites',
+          'Operations consoles',
+          'Analytics hubs',
+          'Onboarding tours',
+          'Product marketing flows',
+          'Research workspaces',
+        ],
+      },
+      testimonials: {
+        heading: 'PM perspectives',
+        description: 'Partner product managers share how these examples accelerate alignment.',
+        items: [
+          {
+            id: 'northbeam-pm',
+            quote:
+              'The mock handoffs made it painless to communicate scope with stakeholders; everything felt pitch-ready in one review.',
+            author: 'Elaine Chou',
+            role: 'Product Manager',
+            company: 'Northbeam Logistics',
+          },
+          {
+            id: 'orbit-pm',
+            quote:
+              'Shared design tokens let our mobile and web squads ideate together. We shipped a cohesive story without slowing engineering.',
+            author: 'Miguel Rivera',
+            role: 'Senior PM',
+            company: 'Orbit Mobility',
+          },
+          {
+            id: 'storyforge-pm',
+            quote:
+              'Even our brand team could riff on the motion system. Seeing variations across mock brands sparked faster content decisions.',
+            author: 'Priya Desai',
+            role: 'Lead PM',
+            company: 'Storyforge Media',
+          },
+        ],
+      },
     },
     language: {
       heading: 'Framework fluency',
@@ -306,7 +476,21 @@ const dictionaries: Record<Locale, Dictionary> = {
       brand: 'liuniipu',
       items: [
         { label: '首頁', href: '#home' },
-        { label: '案例', href: '#example' },
+        {
+          label: '案例',
+          children: [
+            { label: '首頁精選', href: '#example' },
+            { label: '案例資料庫', href: '/zh/examples' },
+          ],
+        },
+        {
+          label: '立即試用',
+          children: [
+            { label: '立即試用 - Market', href: '/zh/try-now/market' },
+            { label: '立即試用 - Intro', href: '/zh/try-now/intro' },
+            { label: '立即試用 - App', href: '/zh/try-now/app' },
+          ],
+        },
         { label: '技術語系', href: '#language' },
         { label: '聯絡', href: '#contact' },
       ],
@@ -389,6 +573,8 @@ const dictionaries: Record<Locale, Dictionary> = {
       heading: '案例精選',
       description:
         '從數據儀表板、敘事導覽頁到行動應用的代表作品，聚焦可衡量的成果。',
+      tryNowCta: '\u7acb\u5373\u8a66\u7528',
+      exploreMoreCta: '\u9032\u4e00\u6b65\u700f\u89bd\u6848\u4f8b\u5eab',
       projects: [
         {
           id: 'market',
@@ -425,6 +611,105 @@ const dictionaries: Record<Locale, Dictionary> = {
         },
       ],
     },
+    examplesPage: {
+      hero: {
+        eyebrow: '案例資料庫',
+        title: '一個衝刺就能套用的示例。',
+        description: '這些模擬品牌示範同一套設計系統如何在不同市場與媒介自由轉換。',
+        ctaLabel: '啟動專案',
+        ctaHref: '#contact',
+      },
+      brands: {
+        heading: '模擬品牌一覽',
+        description: '每個概念聚焦不同旅程，同時沿用相同的元件基底。',
+        items: [
+          {
+            id: 'aurora-exchange',
+            name: 'Aurora Exchange',
+            sector: '金融科技 SaaS',
+            headline: '協助全球交易團隊維持清晰',
+            description: '跨市場警示、流動性洞察與法遵輸出，以沈穩的數據介面呈現。',
+          },
+          {
+            id: 'pulse-ledger',
+            name: 'Pulse Ledger',
+            sector: '金流平台',
+            headline: '擺脫試算表的營收洞察',
+            description: '主管總覽結合 KPI 敘事與鑽取帳務視圖，讓財務團隊快速規劃。',
+          },
+          {
+            id: 'nova-health',
+            name: 'NovaHealth Loop',
+            sector: '數位醫療',
+            headline: '跨專科照護秒對齊',
+            description: '模組化看診時序揭露檢傷決策、追蹤任務與病患目標。',
+          },
+          {
+            id: 'linea-stories',
+            name: 'Linea Stories',
+            sector: '媒體出版',
+            headline: '以動態敘事開場的故事頁',
+            description: '互動章節融合字體、影片與環境聲效開關，支援編輯團隊發佈。',
+          },
+          {
+            id: 'orbit-mobility',
+            name: 'Orbit Mobility',
+            sector: '移動服務市集',
+            headline: '以城市節奏建立乘客信任',
+            description: '動態票價防護、熱區控管與客服巨集讓營運團隊搶先需求。',
+          },
+          {
+            id: 'kindred-markets',
+            name: 'Kindred Markets',
+            sector: '社群電商',
+            headline: '保留溫度的商店中商店',
+            description: '個人化精選、會員層級與即時客服交接，把街區氛圍搬上線。',
+          },
+        ],
+      },
+      categories: {
+        heading: '無限延伸的網頁樣式',
+        label: '從原型到上線旅程：',
+        items: [
+          '市場儀表板',
+          '行動夥伴 App',
+          '單頁發佈網站',
+          '營運控台',
+          '分析中心',
+          '導覽／導入流程',
+          '產品行銷流程',
+          '研究協作空間',
+        ],
+      },
+      testimonials: {
+        heading: 'PM 視角',
+        description: '合作過的產品經理分享這些示例如何加速對齊。',
+        items: [
+          {
+            id: 'northbeam-pm',
+            quote: '這些模擬交付讓我和利害關係人溝通範疇變得輕鬆，一次評審就像準備好簡報。',
+            author: 'Elaine Chou',
+            role: '產品經理',
+            company: 'Northbeam Logistics',
+          },
+          {
+            id: 'orbit-pm',
+            quote: '共用設計 token 讓行動與網頁小組一起構想，不拖慢工程就交付一致故事。',
+            author: 'Miguel Rivera',
+            role: '資深產品經理',
+            company: 'Orbit Mobility',
+          },
+          {
+            id: 'storyforge-pm',
+            quote: '連品牌團隊都能沿著動態系統延伸，看見不同模擬品牌激發更快的內容決策。',
+            author: 'Priya Desai',
+            role: '產品負責人',
+            company: 'Storyforge Media',
+          },
+        ],
+      },
+    },
+
     language: {
       heading: '框架熟練度',
       description:

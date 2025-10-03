@@ -54,7 +54,10 @@ export default async function LocalePage({ params }: LocalePageProps) {
       <ExamplesSection
         heading={dictionary.examples.heading}
         description={dictionary.examples.description}
+        tryNowLabel={dictionary.examples.tryNowCta}
+        exploreMoreLabel={dictionary.examples.exploreMoreCta}
         projects={dictionary.examples.projects}
+        locale={locale}
       />
       <LanguageSection
         heading={dictionary.language.heading}
