@@ -42,6 +42,14 @@ export type LanguageStack = {
   points: readonly string[];
 };
 
+export type LanguageDetail = {
+  id: string;
+  name: string;
+  focus: string;
+  description: string;
+  points: readonly string[];
+};
+
 export type PMTestimonial = {
   id: string;
   quote: string;
@@ -130,6 +138,17 @@ type LanguageContent = {
   stacks: readonly LanguageStack[];
 };
 
+type LanguagePageContent = {
+  hero: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    backLabel: string;
+    backHref: string;
+  };
+  sections: readonly LanguageDetail[];
+};
+
 type ContactContent = {
   badge: string;
   heading: string;
@@ -149,6 +168,7 @@ export type Dictionary = {
   examples: ExamplesContent;
   examplesPage: ExamplesPageContent;
   language: LanguageContent;
+  languagePage: LanguagePageContent;
   contact: ContactContent;
   footer: FooterContent;
 };
@@ -179,7 +199,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             { label: 'App', href: '/en/try-now/app' },
           ],
         },
-        { label: 'Language', href: '#language' },
+        { label: 'Language', href: '/en/language' },
         { label: 'Contact', href: '#contact' },
       ],
       localeButtonAria: 'Switch locale',
@@ -445,6 +465,66 @@ const dictionaries: Record<Locale, Dictionary> = {
         },
       ],
     },
+    languagePage: {
+      hero: {
+        eyebrow: 'Language route',
+        title: 'Key stacks that ship production work.',
+        description:
+          'A deeper look at how I apply each framework and database in day-to-day delivery, from interaction flow to data stewardship.',
+        backLabel: 'Back to overview',
+        backHref: '/en#language',
+      },
+      sections: [
+        {
+          id: 'react-next',
+          name: 'React & Next.js',
+          focus: 'Front-of-house applications',
+          description:
+            'Opinionated use of the App Router to balance dynamic product surfaces with predictable build pipelines.',
+          points: [
+            'Compose server and client components with Suspense to keep interactions responsive.',
+            'Model data flows with Server Actions, Route Handlers, and edge-friendly caching policies.',
+            'Codify shared patterns via Storybook-ready UI primitives and Tailwind tokens.',
+          ],
+        },
+        {
+          id: 'vue-nuxt',
+          name: 'Vue & Nuxt',
+          focus: 'Experience parity for multi-front teams',
+          description:
+            'Nuxt 3 foundations mirroring React feature sets so marketing and product teams stay aligned.',
+          points: [
+            'Leverage file-based routing, layouts, and middleware for campaign-ready pages.',
+            'Use the Composition API and Pinia stores to encapsulate complex UI state.',
+            'Generate static and hybrid deployments with Nuxt Content and server routes.',
+          ],
+        },
+        {
+          id: 'mysql',
+          name: 'MySQL',
+          focus: 'Operational data stores',
+          description:
+            'Structured relational design that favors clarity and predictable scaling for transactional workloads.',
+          points: [
+            'Map domain models with normalization, foreign keys, and read-optimized indexes.',
+            'Design migration paths and rollbacks with Prisma or Planetscale workflows.',
+            'Instrument query performance, slow logs, and backup rotation for production readiness.',
+          ],
+        },
+        {
+          id: 'postgresql',
+          name: 'PostgreSQL',
+          focus: 'Analytical flexibility',
+          description:
+            'Harness Postgres extensions to support mixed analytical and transactional workloads without extra services.',
+          points: [
+            'Model reporting needs with materialized views, CTEs, and window functions.',
+            'Store semi-structured payloads with JSONB and GIN indexes for fast lookup.',
+            'Stream changes through logical replication to feed downstream systems.',
+          ],
+        },
+      ],
+    },
     contact: {
       badge: 'Contact',
       heading: 'Ready when you are.',
@@ -491,7 +571,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             { label: '立即試用 - App', href: '/zh/try-now/app' },
           ],
         },
-        { label: '技術語系', href: '#language' },
+        { label: '技術語系', href: '/zh/language' },
         { label: '聯絡', href: '#contact' },
       ],
       localeButtonAria: '切換語系',
@@ -747,6 +827,62 @@ const dictionaries: Record<Locale, Dictionary> = {
         },
       ],
     },
+    languagePage: {
+      hero: {
+        eyebrow: '技術路線',
+        title: '支撐產品上線的關鍵技術堆疊。',
+        description:
+          '深入說明每種框架與資料庫在日常交付中的使用方式，涵蓋互動流程到資料治理。',
+        backLabel: '回到總覽',
+        backHref: '/zh#language',
+      },
+      sections: [
+        {
+          id: 'react-next',
+          name: 'React 與 Next.js',
+          focus: '核心產品前台',
+          description: '善用 App Router 的規範來平衡動態產品頁與可預測的建置流程。',
+          points: [
+            '透過 Server / Client Components 與 Suspense 維持互動順暢。',
+            '結合 Server Actions、Route Handlers 與邊緣快取策略規劃資料流。',
+            '以 Storybook-ready 的 UI 元件與 Tailwind token 統一設計語彙。',
+          ],
+        },
+        {
+          id: 'vue-nuxt',
+          name: 'Vue 與 Nuxt',
+          focus: '多團隊體驗對齊',
+          description: '以 Nuxt 3 打造與 React 相仿的能力，讓行銷與產品團隊保持一致。',
+          points: [
+            '運用檔案式路由、版型與 middleware 快速推出活動頁。',
+            '以 Composition API 與 Pinia store 封裝複雜狀態。',
+            '結合 Nuxt Content 與伺服器路由製作靜態與混合佈署。',
+          ],
+        },
+        {
+          id: 'mysql',
+          name: 'MySQL',
+          focus: '營運型資料庫',
+          description: '以結構化設計支撐交易工作負載，兼顧清晰與擴充性。',
+          points: [
+            '依領域模型進行正規化、外鍵與讀取導向索引配置。',
+            '透過 Prisma 或 Planetscale pipeline 管理版本遷移與回滾。',
+            '監控查詢效能、慢查記錄與備份輪替，確保正式環境安全。',
+          ],
+        },
+        {
+          id: 'postgresql',
+          name: 'PostgreSQL',
+          focus: '分析彈性',
+          description: '運用 Postgres 擴充功能，兼顧分析與交易需求，避免額外服務。',
+          points: [
+            '以實體化檢視、CTE 與視窗函式滿足報表需求。',
+            '運用 JSONB 與 GIN 索引儲存半結構化資料並維持查詢速度。',
+            '藉由邏輯複寫串接變更資料，提供下游系統即時更新。',
+          ],
+        },
+      ],
+    },
     contact: {
       badge: '聯絡',
       heading: '想開始就現在。',
@@ -784,4 +920,3 @@ export function isLocale(value: string): value is Locale {
 export function getDictionary(locale: Locale): Dictionary {
   return dictionaries[locale];
 }
-
