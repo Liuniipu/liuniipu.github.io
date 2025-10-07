@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Navigation } from '../../../components/Navigation';
 import { SiteFooter } from '../../../components/SiteFooter';
 import { MarketCartDemo } from '../../../components/MarketCartDemo';
+import { ChatSimulator } from '../../../components/ChatSimulator';
 import { IntroShowcase } from '../../../components/IntroShowcase';
 import {
   getDictionary,
@@ -138,6 +139,7 @@ export default async function TryNowProjectPage({ params }: TryNowPageProps) {
           </div>
           {project.id === 'market' ? <MarketCartDemo locale={locale} /> : null}
           {project.id === 'intro' ? <IntroShowcase locale={locale} /> : null}
+          {project.id === 'app' ? <ChatSimulator locale={locale} /> : null}
           {otherProjects.length > 0 ? (
             <div className="rounded-3xl border border-slate-800/60 bg-slate-950/40 p-6 sm:p-8">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">
