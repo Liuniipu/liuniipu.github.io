@@ -22,6 +22,8 @@ type HeroSectionProps = {
     dotTemplate: string;
   };
   stats: readonly HeroStat[];
+  exploreHref?: string;
+  startHref?: string;
 };
 
 export function HeroSection({
@@ -30,6 +32,8 @@ export function HeroSection({
   card,
   navigationLabels,
   stats,
+  exploreHref = '#example',
+  startHref = '#contact',
 }: HeroSectionProps) {
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -75,13 +79,13 @@ export function HeroSection({
               </ul>
               <div className="flex flex-wrap gap-4 pt-2">
                 <Link
-                  href="#example"
+                  href={exploreHref}
                   className="rounded-full bg-sky-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow transition hover:bg-sky-300"
                 >
                   {ctas.explore}
                 </Link>
                 <Link
-                  href="#contact"
+                  href={startHref}
                   className="rounded-full border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
                 >
                   {ctas.start}

@@ -6,6 +6,7 @@ import { SiteFooter } from '../../../components/SiteFooter';
 import { MarketCartDemo } from '../../../components/MarketCartDemo';
 import { ChatSimulator } from '../../../components/ChatSimulator';
 import { IntroShowcase } from '../../../components/IntroShowcase';
+import { ModularShowcase } from '../../../components/ModularShowcase';
 import {
   getDictionary,
   isLocale,
@@ -92,7 +93,7 @@ export default async function TryNowProjectPage({ params }: TryNowPageProps) {
 
   const copy = detailCopy[locale];
   const exampleHref = `/${locale}#example`;
-  const contactHref = `/${locale}#contact`;
+  const contactHref = `/${locale}/contact`;
   const otherProjects = dictionary.examples.projects.filter((item) => item.id !== project.id);
 
   return (
@@ -139,6 +140,7 @@ export default async function TryNowProjectPage({ params }: TryNowPageProps) {
           </div>
           {project.id === 'market' ? <MarketCartDemo locale={locale} /> : null}
           {project.id === 'intro' ? <IntroShowcase locale={locale} /> : null}
+          {project.id === 'modular' ? <ModularShowcase locale={locale} /> : null}
           {project.id === 'app' ? <ChatSimulator locale={locale} /> : null}
           {otherProjects.length > 0 ? (
             <div className="rounded-3xl border border-slate-800/60 bg-slate-950/40 p-6 sm:p-8">

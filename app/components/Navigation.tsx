@@ -214,13 +214,31 @@ export function Navigation({
           <button
             type="button"
             onClick={handleLocaleToggle}
-            className="flex items-center gap-2 rounded-full border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+            className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1.5 text-sm font-semibold text-slate-200 shadow-sm transition hover:border-sky-400 hover:text-sky-300 hover:shadow-md"
             aria-label={localeButtonAria}
           >
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-[0.7rem] font-bold">
-              i18n
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800/80 text-sky-300">
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path
+                  d="M12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9Z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M3.6 9h16.8M3.6 15h16.8M12 3c2.5 2.778 3.75 5.556 3.75 9S14.5 18.222 12 21c-2.5-2.778-3.75-5.556-3.75-9S9.5 5.778 12 3Z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </span>
-            {activeLocale.label}
+            <span className="uppercase tracking-wide">{activeLocale.label}</span>
           </button>
           <button
             type="button"

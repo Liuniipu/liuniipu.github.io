@@ -1,12 +1,10 @@
 ﻿export const locales = ['en', 'zh'] as const;
 export type Locale = (typeof locales)[number];
-
 export type NavItem = {
   label: string;
   href?: string;
   children?: readonly NavItem[];
 };
-
 export type Slide = {
   id: string;
   label: string;
@@ -14,19 +12,16 @@ export type Slide = {
   description: string;
   bullets: readonly string[];
 };
-
 export type HeroStat = {
   value: string;
   description: string;
 };
-
 export type ExampleProject = {
   id: string;
   title: string;
   description: string;
   highlights: readonly string[];
 };
-
 export type BrandCard = {
   id: string;
   name: string;
@@ -34,14 +29,12 @@ export type BrandCard = {
   headline: string;
   description: string;
 };
-
 export type LanguageStack = {
   id: string;
   name: string;
   focus: string;
   points: readonly string[];
 };
-
 export type LanguageDetail = {
   id: string;
   name: string;
@@ -49,7 +42,6 @@ export type LanguageDetail = {
   description: string;
   points: readonly string[];
 };
-
 export type PMTestimonial = {
   id: string;
   quote: string;
@@ -57,19 +49,16 @@ export type PMTestimonial = {
   role: string;
   company: string;
 };
-
 export type ContactDetail = {
   id: string;
   label: string;
   value: string;
   href: string;
 };
-
 export type LocaleOption = {
   code: Locale;
   label: string;
 };
-
 type NavigationContent = {
   brand: string;
   items: readonly NavItem[];
@@ -79,7 +68,6 @@ type NavigationContent = {
     close: string;
   };
 };
-
 type HeroContent = {
   slides: readonly Slide[];
   ctas: {
@@ -98,7 +86,6 @@ type HeroContent = {
   };
   stats: readonly HeroStat[];
 };
-
 type ExamplesContent = {
   heading: string;
   description: string;
@@ -106,7 +93,6 @@ type ExamplesContent = {
   exploreMoreCta: string;
   projects: readonly ExampleProject[];
 };
-
 type ExamplesPageContent = {
   hero: {
     eyebrow: string;
@@ -131,13 +117,11 @@ type ExamplesPageContent = {
     items: readonly PMTestimonial[];
   };
 };
-
 type LanguageContent = {
   heading: string;
   description: string;
   stacks: readonly LanguageStack[];
 };
-
 type LanguagePageContent = {
   hero: {
     eyebrow: string;
@@ -148,7 +132,6 @@ type LanguagePageContent = {
   };
   sections: readonly LanguageDetail[];
 };
-
 type ContactContent = {
   badge: string;
   heading: string;
@@ -157,11 +140,9 @@ type ContactContent = {
   secondaryCta: string;
   contacts: readonly ContactDetail[];
 };
-
 type FooterContent = {
   copy: string;
 };
-
 export type Dictionary = {
   navigation: NavigationContent;
   hero: HeroContent;
@@ -172,35 +153,29 @@ export type Dictionary = {
   contact: ContactContent;
   footer: FooterContent;
 };
-
 export const localeOptions: readonly LocaleOption[] = [
   { code: 'en', label: 'English' },
   { code: 'zh', label: 'TW-zh' },
 ] as const;
-
 const dictionaries: Record<Locale, Dictionary> = {
   en: {
     navigation: {
       brand: 'liuniipu',
       items: [
         { label: 'Home', href: '#home' },
-        {
-          label: 'Examples',
-          children: [
-            { label: 'Highlights', href: '#example' },
-            { label: 'Example library', href: '/en/examples' },
-          ],
-        },
+        { label: 'Examples', href: '/en/examples' },
         {
           label: 'Try Now',
           children: [
+            { label: 'Overview', href: '/en/try-now' },
             { label: 'Market', href: '/en/try-now/market' },
             { label: 'Intro', href: '/en/try-now/intro' },
+            { label: 'Modular', href: '/en/try-now/modular' },
             { label: 'App', href: '/en/try-now/app' },
           ],
         },
         { label: 'Language', href: '/en/language' },
-        { label: 'Contact', href: '#contact' },
+        { label: 'Contact', href: '/en/contact' },
       ],
       localeButtonAria: 'Switch locale',
       menu: {
@@ -307,6 +282,17 @@ const dictionaries: Record<Locale, Dictionary> = {
           ],
         },
         {
+          id: 'modular',
+          title: 'Modular Package Showcase',
+          description:
+            'Configurable module catalog that spotlights plug-and-play bundles with live previews, usage recipes, and documentation callouts.',
+          highlights: [
+            'Role: Product Marketing Engineering',
+            'Stack: Next.js, MDX, Radix UI',
+            'Outcome: 30% lift in module activation rate',
+          ],
+        },
+        {
           id: 'app',
           title: 'Mobile Companion App',
           description:
@@ -326,7 +312,7 @@ const dictionaries: Record<Locale, Dictionary> = {
         description:
           'Mock brands that show how the same design system flexes across markets and mediums.',
         ctaLabel: 'Start a project',
-        ctaHref: '#contact',
+        ctaHref: '/en/contact',
       },
       brands: {
         heading: 'Mock brands at a glance',
@@ -341,7 +327,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             description:
               'Cross-market alerts, liquidity insights, and compliance-ready exports packaged in a calm, data-first interface.',
           },
-          {
+        {
             id: 'pulse-ledger',
             name: 'Pulse Ledger',
             sector: 'Payments platform',
@@ -349,7 +335,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             description:
               'Executive dashboards pair KPI storytelling with drill-down ledgers so finance leads can plan faster.',
           },
-          {
+        {
             id: 'nova-health',
             name: 'NovaHealth Loop',
             sector: 'Digital health',
@@ -357,7 +343,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             description:
               'Modular visit timelines surface triage decisions, follow ups, and goals for multidisciplinary clinics.',
           },
-          {
+        {
             id: 'linea-stories',
             name: 'Linea Stories',
             sector: 'Media publishing',
@@ -365,7 +351,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             description:
               'Interactive chapters blend typography, video, and ambient audio controls for editorial launch teams.',
           },
-          {
+        {
             id: 'orbit-mobility',
             name: 'Orbit Mobility',
             sector: 'Mobility marketplace',
@@ -373,7 +359,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             description:
               'Dynamic pricing guardrails, surge controls, and support macros keep operations ahead of demand.',
           },
-          {
+        {
             id: 'kindred-markets',
             name: 'Kindred Markets',
             sector: 'Community commerce',
@@ -409,7 +395,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             role: 'Product Manager',
             company: 'Northbeam Logistics',
           },
-          {
+        {
             id: 'orbit-pm',
             quote:
               'Shared design tokens let our mobile and web squads ideate together. We shipped a cohesive story without slowing engineering.',
@@ -417,7 +403,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             role: 'Senior PM',
             company: 'Orbit Mobility',
           },
-          {
+        {
             id: 'storyforge-pm',
             quote:
               'Even our brand team could riff on the motion system. Seeing variations across mock brands sparked faster content decisions.',
@@ -556,23 +542,19 @@ const dictionaries: Record<Locale, Dictionary> = {
       brand: 'liuniipu',
       items: [
         { label: '首頁', href: '#home' },
-        {
-          label: '案例',
-          children: [
-            { label: '首頁精選', href: '#example' },
-            { label: '案例資料庫', href: '/zh/examples' },
-          ],
-        },
+        { label: '案例', href: '/zh/examples' },
         {
           label: '立即試用',
           children: [
-            { label: '立即試用 - Market', href: '/zh/try-now/market' },
-            { label: '立即試用 - Intro', href: '/zh/try-now/intro' },
-            { label: '立即試用 - App', href: '/zh/try-now/app' },
+            { label: '總覽', href: '/zh/try-now' },
+            { label: 'Market', href: '/zh/try-now/market' },
+            { label: 'Intro', href: '/zh/try-now/intro' },
+            { label: 'Modular', href: '/zh/try-now/modular' },
+            { label: 'App', href: '/zh/try-now/app' },
           ],
         },
         { label: '技術語系', href: '/zh/language' },
-        { label: '聯絡', href: '#contact' },
+        { label: '聯絡', href: '/zh/contact' },
       ],
       localeButtonAria: '切換語系',
       menu: {
@@ -679,6 +661,17 @@ const dictionaries: Record<Locale, Dictionary> = {
           ],
         },
         {
+          id: 'modular',
+          title: 'Modular Package Showcase',
+          description:
+            'Configurable module catalog that spotlights plug-and-play bundles with live previews, usage recipes, and documentation callouts.',
+          highlights: [
+            'Role: Product Marketing Engineering',
+            'Stack: Next.js, MDX, Radix UI',
+            'Outcome: 30% lift in module activation rate',
+          ],
+        },
+        {
           id: 'app',
           title: 'Mobile Companion App',
           description:
@@ -697,7 +690,7 @@ const dictionaries: Record<Locale, Dictionary> = {
         title: '一個衝刺就能套用的示例。',
         description: '這些模擬品牌示範同一套設計系統如何在不同市場與媒介自由轉換。',
         ctaLabel: '啟動專案',
-        ctaHref: '#contact',
+        ctaHref: '/zh/contact',
       },
       brands: {
         heading: '模擬品牌一覽',
@@ -710,35 +703,35 @@ const dictionaries: Record<Locale, Dictionary> = {
             headline: '協助全球交易團隊維持清晰',
             description: '跨市場警示、流動性洞察與法遵輸出，以沈穩的數據介面呈現。',
           },
-          {
+        {
             id: 'pulse-ledger',
             name: 'Pulse Ledger',
             sector: '金流平台',
             headline: '擺脫試算表的營收洞察',
             description: '主管總覽結合 KPI 敘事與鑽取帳務視圖，讓財務團隊快速規劃。',
           },
-          {
+        {
             id: 'nova-health',
             name: 'NovaHealth Loop',
             sector: '數位醫療',
             headline: '跨專科照護秒對齊',
             description: '模組化看診時序揭露檢傷決策、追蹤任務與病患目標。',
           },
-          {
+        {
             id: 'linea-stories',
             name: 'Linea Stories',
             sector: '媒體出版',
             headline: '以動態敘事開場的故事頁',
             description: '互動章節融合字體、影片與環境聲效開關，支援編輯團隊發佈。',
           },
-          {
+        {
             id: 'orbit-mobility',
             name: 'Orbit Mobility',
             sector: '移動服務市集',
             headline: '以城市節奏建立乘客信任',
             description: '動態票價防護、熱區控管與客服巨集讓營運團隊搶先需求。',
           },
-          {
+        {
             id: 'kindred-markets',
             name: 'Kindred Markets',
             sector: '社群電商',
@@ -772,14 +765,14 @@ const dictionaries: Record<Locale, Dictionary> = {
             role: '產品經理',
             company: 'Northbeam Logistics',
           },
-          {
+        {
             id: 'orbit-pm',
             quote: '共用設計 token 讓行動與網頁小組一起構想，不拖慢工程就交付一致故事。',
             author: 'Miguel Rivera',
             role: '資深產品經理',
             company: 'Orbit Mobility',
           },
-          {
+        {
             id: 'storyforge-pm',
             quote: '連品牌團隊都能沿著動態系統延伸，看見不同模擬品牌激發更快的內容決策。',
             author: 'Priya Desai',
@@ -789,7 +782,6 @@ const dictionaries: Record<Locale, Dictionary> = {
         ],
       },
     },
-
     language: {
       heading: '框架熟練度',
       description:
@@ -910,13 +902,13 @@ const dictionaries: Record<Locale, Dictionary> = {
     },
   },
 };
-
 export const defaultLocale: Locale = 'zh';
-
 export function isLocale(value: string): value is Locale {
   return locales.includes(value as Locale);
 }
-
 export function getDictionary(locale: Locale): Dictionary {
   return dictionaries[locale];
 }
+
+
+

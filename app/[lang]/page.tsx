@@ -50,6 +50,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
         card={dictionary.hero.card}
         navigationLabels={dictionary.hero.navigationLabels}
         stats={dictionary.hero.stats}
+        startHref={`/${locale}/contact`}
       />
       <ExamplesSection
         heading={dictionary.examples.heading}
