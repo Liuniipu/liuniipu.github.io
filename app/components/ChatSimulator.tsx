@@ -116,7 +116,7 @@ export function ChatSimulator({ locale }: ChatSimulatorProps) {
   const [pending, setPending] = useState(false);
   const [typingProgress, setTypingProgress] = useState<Record<string, number>>({});
   const [activeTypingId, setActiveTypingId] = useState<string | null>(null);
-  const endRef = useRef<HTMLDivElement | null>(null);
+  const messageViewportRef = useRef<HTMLDivElement | null>(null);
   const typingTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -135,7 +135,15 @@ export function ChatSimulator({ locale }: ChatSimulatorProps) {
   }, [locale]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const viewport = messageViewportRef.current;
+    if (!viewport) {
+      return;
+    }
+
+    viewport.scrollTo({
+      top: viewport.scrollHeight,
+      behavior: 'smooth',
+    });
   }, [messages.length, pending, typingProgress]);
 
   useEffect(() => {
@@ -214,7 +222,7 @@ export function ChatSimulator({ locale }: ChatSimulatorProps) {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[2fr,1fr]">
         <div className="flex h-[420px] min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40">
-          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
+          <div ref={messageViewportRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
             {messages.map((m) => (
               <div
                 key={m.id}
@@ -237,7 +245,6 @@ export function ChatSimulator({ locale }: ChatSimulatorProps) {
                 <span className="ml-2">{copy.typing}</span>
               </div>
             ) : null}
-            <div ref={endRef} />
           </div>
         </div>
 
