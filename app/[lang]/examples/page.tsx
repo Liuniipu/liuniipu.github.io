@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { ReactElement } from 'react';
 
 import { Navigation } from '../../components/Navigation';
 import { SiteFooter } from '../../components/SiteFooter';
@@ -51,7 +52,7 @@ const QuoteIcon = () => (
   </svg>
 );
 
-const brandCardDecor: Record<string, { icon: JSX.Element; animationClass: string }> = {
+const brandCardDecor: Record<string, { icon: ReactElement; animationClass: string }> = {
   'social-platform': { icon: <SocialIcon />, animationClass: 'example-anim-flip example-delay-0' },
   'resource-admin': { icon: <ResourceIcon />, animationClass: 'example-anim-flip example-delay-1' },
   'branding-site': { icon: <BrandIcon />, animationClass: 'example-anim-flip example-delay-2' },
