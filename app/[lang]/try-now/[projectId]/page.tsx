@@ -28,14 +28,14 @@ const detailCopy: Record<
 > = {
   en: {
     backLabel: 'Back to examples',
-    highlightsHeading: 'What this delivers',
+    highlightsHeading: 'What to look for',
     exploreExamples: 'Discover other try-now prototypes',
     exploreButton: 'Return to examples',
     contactCta: 'Start a project conversation',
   },
   zh: {
     backLabel: '\u8fd4\u56de\u6848\u4f8b\u7e3d\u89bd',
-    highlightsHeading: '\u5e36\u4f86\u7684\u6210\u679c',
+    highlightsHeading: '\u53ef\u89c0\u5bdf\u91cd\u9ede',
     exploreExamples: '\u63a2\u7d22\u66f4\u591a\u9ad4\u9a57\u65b9\u6848',
     exploreButton: '\u56de\u5230\u6848\u4f8b\u7e3d\u89bd',
     contactCta: '\u958b\u59cb\u5408\u4f5c\u6d3d\u8a62',

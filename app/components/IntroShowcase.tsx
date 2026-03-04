@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import type { Locale } from '../../lib/homeContent';
 
@@ -19,6 +19,7 @@ type ParallaxItem = {
 };
 
 type SectionState = Record<string, boolean>;
+type ViewportPresetId = 'desktop' | 'tablet' | 'mobile';
 
 const MIN_VIEWPORT = 360;
 const MAX_VIEWPORT = 1160;
@@ -43,7 +44,7 @@ const copy = {
     heroTitle: 'Balance narrative copy with kinetic visuals.',
     heroBody:
       'Pin striking headlines while parallax illustrations drift at varying speeds. CTA stays visible as the story opens.',
-    heroCta: 'Play launch track',
+    heroCta: 'Get started now',
     timelineEyebrow: 'Chapter stack',
     timelineTitle: 'Release milestones stay anchored.',
     timelineBody:
@@ -64,7 +65,7 @@ const copy = {
     milestoneLabel: 'Milestone',
     galleryCards: ['Kinetic hero', 'Waveform overlay', 'Hotspot cards', 'Backstage clips'],
     contactReply: '24h reply',
-    localizedFooter: 'Localized footer',
+    localizedFooter: 'Languages: EN + TW-ZH',
     endOfShowcase: 'End of showcase',
   },
   zh: {
@@ -86,7 +87,7 @@ const copy = {
     heroTitle: '\u8b93\u6587\u6848\u8207\u52d5\u614b\u8996\u89ba\u4fdd\u6301\u5e73\u8861\u3002',
     heroBody:
       '\u4ee5\u5438\u775b\u6a19\u984c\u958b\u5834\uff0c\u642d\u914d\u5206\u5c64\u5149\u5f71\u79fb\u52d5\u8207\u7a69\u5b9a CTA\uff0c\u8b93\u4f7f\u7528\u8005\u5f9e\u7b2c\u4e00\u5c4f\u5c31\u638c\u63e1\u4e3b\u8981\u8a0a\u606f\u3002',
-    heroCta: '\u64ad\u653e\u958b\u5834\u97f3\u8ecc',
+    heroCta: '\u7acb\u5373\u958b\u59cb',
     timelineEyebrow: '\u7ae0\u7bc0\u7bc0\u9ede',
     timelineTitle: '\u91cd\u8981\u91cc\u7a0b\u7891\u8207\u8a0a\u606f\u4f9d\u5e8f\u5c55\u958b\u3002',
     timelineBody:
@@ -107,15 +108,31 @@ const copy = {
     milestoneLabel: '\u91cc\u7a0b\u7891',
     galleryCards: ['\u52d5\u614b\u958b\u5834', '\u6ce2\u5f62\u758a\u5716', '\u71b1\u9ede\u5361\u7247', '\u5e55\u5f8c\u7247\u6bb5'],
     contactReply: '24 \u5c0f\u6642\u56de\u8986',
-    localizedFooter: '\u672c\u5730\u5316\u9801\u5c3e',
+    localizedFooter: '\u8a9e\u8a00\uff1aEN + TW-ZH',
     endOfShowcase: '\u5c55\u793a\u5230\u5e95\u4e86',
   },
 };
 const viewportPresets = [
-  { id: 'desktop', width: 1080, icon: '\ud83d\udda5\ufe0f' },
-  { id: 'tablet', width: 820, icon: '\ud83d\udcbb' },
-  { id: 'mobile', width: 420, icon: '\ud83d\udcf2' },
-];
+  { id: 'desktop', width: 1080, iconId: 'monitor' },
+  { id: 'tablet', width: 820, iconId: 'tabletDevice' },
+  { id: 'mobile', width: 420, iconId: 'phoneDevice' },
+] as const;
+
+const timelineIconIds = ['rocket', 'chart', 'globe'] as const;
+const galleryIconIds = ['spark', 'sliders', 'pin', 'film'] as const;
+
+type IntroIconId =
+  | (typeof timelineIconIds)[number]
+  | (typeof galleryIconIds)[number]
+  | 'megaphone'
+  | 'compass'
+  | 'monitor'
+  | 'tabletDevice'
+  | 'phoneDevice';
+type ShowcaseIconProps = {
+  id: IntroIconId;
+  className?: string;
+};
 
 const parallaxItems: ParallaxItem[] = [
   {
@@ -155,11 +172,107 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+function ShowcaseIcon({ id, className = '' }: ShowcaseIconProps) {
+  const baseClass = `h-6 w-6 text-sky-300 ${className}`.trim();
+  switch (id) {
+    case 'rocket':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <path d="M14 4l6 6-5.5 5.5a6 6 0 01-8.5 0L4 14l5.5-5.5A6 6 0 0114 4z" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M8 16l-1.5 3.5L10 18m6-10l1.5-3.5L14 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="13.5" cy="10.5" r="1.5" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    case 'chart':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <path d="M4 19h16M7 16v-4m5 4V8m5 8v-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M7 10l5-3 5 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'globe':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M4 12h16M12 4a13 13 0 010 16M12 4a13 13 0 000 16" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    case 'spark':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <path d="M12 4l1.8 4.2L18 10l-4.2 1.8L12 16l-1.8-4.2L6 10l4.2-1.8L12 4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M18.5 4.5v2M4.5 17.5v2M4.5 4.5v1.5M19.5 17v2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      );
+    case 'sliders':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="9" cy="7" r="2" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="15" cy="12" r="2" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="11" cy="17" r="2" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    case 'pin':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <path d="M12 21s6-5.4 6-10a6 6 0 10-12 0c0 4.6 6 10 6 10z" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="12" cy="11" r="2" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    case 'film':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <rect x="5" y="6" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M9 6v12M15 6v12M5 10h4M15 10h4M5 14h4M15 14h4" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    case 'megaphone':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <path d="M4 13v-2l9-4v10l-9-4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M13 9h2a4 4 0 014 4 4 4 0 01-4 4h-2M7 15l1.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      );
+    case 'compass':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M15.5 8.5l-2 5-5 2 2-5 5-2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'monitor':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <rect x="3.5" y="5" width="17" height="11.5" rx="1.8" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M9 19h6M12 16.5V19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      );
+    case 'tabletDevice':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <rect x="6.5" y="3.5" width="11" height="17" rx="2" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="12" cy="17.5" r="0.8" fill="currentColor" />
+        </svg>
+      );
+    case 'phoneDevice':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={baseClass} aria-hidden="true">
+          <rect x="8" y="2.5" width="8" height="19" rx="2" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M10.5 5h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="12" cy="18.3" r="0.8" fill="currentColor" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 export function IntroShowcase({ locale }: IntroShowcaseProps) {
-  const [viewportWidth, setViewportWidth] = useState(1080);
+  const [selectedPresetId, setSelectedPresetId] = useState<ViewportPresetId>('desktop');
   const [scrollPosition, setScrollPosition] = useState(0);
   const [visibleSections, setVisibleSections] = useState<SectionState>({ hero: true });
-  const [maxPreviewWidth, setMaxPreviewWidth] = useState<number | null>(null);
+  const [previewWidth, setPreviewWidth] = useState<number>(MAX_VIEWPORT);
   const frameRef = useRef<HTMLDivElement | null>(null);
   const previewAreaRef = useRef<HTMLDivElement | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -192,12 +305,18 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
           const next: SectionState = { ...previous };
           for (const entry of entries) {
             const id = entry.target.getAttribute('data-section-id');
-            if (id) next[id] = entry.isIntersecting;
+            if (!id) {
+              continue;
+            }
+            // Keep revealed sections visible to prevent flicker near trigger boundaries.
+            if (entry.isIntersecting) {
+              next[id] = true;
+            }
           }
           return next;
         });
       },
-      { root: container, rootMargin: '0px 0px -20% 0px', threshold: 0.35 },
+      { root: container, rootMargin: '0px 0px -16% 0px', threshold: 0.4 },
     );
 
     const nodes = Object.values(sectionRefs.current);
@@ -205,34 +324,27 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
+  useLayoutEffect(() => {
+    const preview = previewAreaRef.current;
+    if (!preview) return;
 
-    const updateMaxWidth = () => {
-      const preview = previewAreaRef.current;
-      if (!preview) return;
-      const rect = preview.getBoundingClientRect();
-      const computedStyle = window.getComputedStyle(preview);
-      const paddingRight = Number.parseFloat(computedStyle.paddingRight) || 0;
-      const available = window.innerWidth - rect.left - paddingRight;
-      const safeAvailable = Math.max(0, available);
-      const bounded = Math.min(MAX_VIEWPORT, safeAvailable);
-      setMaxPreviewWidth(Number.isFinite(bounded) && bounded > 0 ? bounded : null);
+    const updatePreviewWidth = () => {
+      const measured = Math.max(0, preview.clientWidth);
+      setPreviewWidth(Math.min(MAX_VIEWPORT, measured));
     };
 
-    updateMaxWidth();
-    window.addEventListener('resize', updateMaxWidth);
+    updatePreviewWidth();
 
     if (typeof ResizeObserver !== 'undefined') {
-      const observer = new ResizeObserver(updateMaxWidth);
-      if (previewAreaRef.current) observer.observe(previewAreaRef.current);
-      return () => {
-        window.removeEventListener('resize', updateMaxWidth);
-        observer.disconnect();
-      };
+      const observer = new ResizeObserver(() => {
+        updatePreviewWidth();
+      });
+      observer.observe(preview);
+      return () => observer.disconnect();
     }
 
-    return () => window.removeEventListener('resize', updateMaxWidth);
+    window.addEventListener('resize', updatePreviewWidth);
+    return () => window.removeEventListener('resize', updatePreviewWidth);
   }, []);
 
   const parallax = useMemo(
@@ -272,12 +384,25 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
   );
 
   const content = copy[locale];
-  const desiredWidth = clamp(viewportWidth, MIN_VIEWPORT, MAX_VIEWPORT);
-  const availableWidth = maxPreviewWidth ?? desiredWidth;
+  const selectedPreset = viewportPresets.find((preset) => preset.id === selectedPresetId) ?? viewportPresets[0];
+  const isPhoneFrame = selectedPresetId === 'mobile';
+  const isTabletFrame = selectedPresetId === 'tablet';
+  const isDesktopFrame = selectedPresetId === 'desktop';
+  const measuredPreviewWidth = previewWidth > 0 ? previewWidth : selectedPreset.width;
+  const desktopTargetWidth = Math.round(measuredPreviewWidth * 0.9);
+  const tabletTargetWidth = Math.min(selectedPreset.width, Math.round(measuredPreviewWidth * 0.96));
+  const requestedWidth = isDesktopFrame ? desktopTargetWidth : isTabletFrame ? tabletTargetWidth : selectedPreset.width;
+  const desiredWidth = clamp(requestedWidth, MIN_VIEWPORT, MAX_VIEWPORT);
+  const availableWidth = measuredPreviewWidth;
+  const layoutPreset: ViewportPresetId = desiredWidth <= 560 ? 'mobile' : desiredWidth <= 900 ? 'tablet' : 'desktop';
+  const isPhoneLayout = layoutPreset === 'mobile';
+  const isTabletLayout = layoutPreset === 'tablet';
+  const isDesktopLayout = layoutPreset === 'desktop';
   const rawScale = desiredWidth > 0 ? Math.min(1, availableWidth / desiredWidth) : 1;
   const frameScale = Number.isFinite(rawScale) && rawScale > 0 ? rawScale : 1;
   const scaledWidth = Math.max(1, Math.round(desiredWidth * frameScale));
   const isScaledDown = frameScale < 0.999;
+  const isNarrowTabletFrame = isTabletFrame && availableWidth < 620;
   const scalePercent = Math.round(frameScale * 100);
   const scaledMessage =
     locale === 'zh'
@@ -288,53 +413,62 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
     sectionRefs.current[id] = node;
   };
 
-  const isPhoneFrame = desiredWidth <= 460;
-  const isTabletFrame = desiredWidth <= 840;
-  const isDesktopFrame = !isTabletFrame;
   const isCompactFrame = desiredWidth <= 640;
-  const frameHeight = isPhoneFrame ? 620 : 600;
-  const topBarClass = isPhoneFrame ? 'px-3 py-3 text-[10px]' : 'px-6 py-4 text-xs';
-  const scrollContentClass = isPhoneFrame
-    ? 'relative space-y-6 px-4 pb-3 pt-6'
-    : isTabletFrame
-      ? 'relative space-y-8 px-6 pb-3 pt-8'
-      : 'relative space-y-12 px-8 pb-3 pt-10';
-  const heroShellClass = isPhoneFrame
+  const frameHeight = isPhoneFrame
+    ? 620
+    : isDesktopFrame
+      ? Math.round((desiredWidth * 9) / 16)
+      : 600;
+  const topBarClass = isPhoneLayout ? 'px-3 py-3 text-[10px]' : 'px-6 py-4 text-xs';
+  const scrollContentClass = isPhoneLayout
+    ? 'relative space-y-6 px-4 pb-0 pt-6'
+    : isTabletLayout
+      ? 'relative space-y-8 px-6 pb-0 pt-8'
+      : 'relative space-y-12 px-8 pb-0 pt-10';
+  const heroShellClass = isPhoneLayout
     ? 'rounded-2xl px-4 py-6'
-    : isTabletFrame
+    : isTabletLayout
       ? 'rounded-3xl px-6 py-8'
       : 'rounded-3xl px-8 py-12';
-  const heroTitleClass = isPhoneFrame
+  const heroTitleClass = isPhoneLayout
     ? 'text-xl leading-tight'
-    : isTabletFrame
+    : isTabletLayout
       ? 'text-2xl leading-tight'
       : 'text-3xl leading-tight';
-  const bodyTextClass = isPhoneFrame ? 'text-[13px] leading-6 text-slate-300' : 'text-sm leading-6 text-slate-300';
-  const sectionPadClass = isPhoneFrame
+  const bodyTextClass = isPhoneLayout ? 'text-[13px] leading-6 text-slate-300' : 'text-sm leading-6 text-slate-300';
+  const sectionPadClass = isPhoneLayout
     ? 'rounded-2xl p-4'
-    : isTabletFrame
+    : isTabletLayout
       ? 'rounded-3xl p-6'
       : 'rounded-3xl p-8';
-  const sectionTitleClass = isPhoneFrame ? 'text-lg leading-snug' : 'text-2xl';
-  const timelineGridClass = isDesktopFrame ? 'grid-cols-[1.2fr,1fr]' : 'grid-cols-1';
-  const galleryGridClass = isPhoneFrame ? 'grid-cols-1' : isTabletFrame ? 'grid-cols-2' : 'grid-cols-4';
-  const closerPadClass = isPhoneFrame
+  const sectionTitleClass = isPhoneLayout ? 'text-lg leading-snug' : 'text-2xl';
+  const timelineGridClass = isDesktopLayout ? 'grid-cols-[1.2fr,1fr]' : 'grid-cols-1';
+  const galleryGridClass = isPhoneLayout ? 'grid-cols-1' : isTabletLayout ? 'grid-cols-2' : 'grid-cols-4';
+  const closerPadClass = isPhoneLayout
     ? 'rounded-2xl px-4 py-6'
-    : isTabletFrame
+    : isTabletLayout
       ? 'rounded-3xl px-6 py-8'
       : 'rounded-3xl px-8 py-10';
   const closerLayoutClass = isCompactFrame
     ? 'flex flex-col gap-4'
-    : isTabletFrame
+    : isTabletLayout
       ? 'flex flex-col gap-5'
       : 'flex items-center justify-between gap-6';
-  const activePreset = viewportPresets.find((preset) => preset.width === desiredWidth)?.id ?? null;
+  const activePreset = selectedPresetId;
   const frameShellClass = isDesktopFrame
     ? 'rounded-[30px] border border-slate-700 bg-slate-900/70 p-2 pb-3 shadow-[0_28px_90px_-50px_rgba(15,23,42,0.9)]'
     : isTabletFrame
-      ? 'rounded-[34px] border-[10px] border-slate-700 bg-slate-900 p-2 shadow-[0_28px_90px_-55px_rgba(15,23,42,0.95)]'
+      ? isNarrowTabletFrame
+        ? 'rounded-[30px] border-[6px] border-slate-700 bg-slate-900 p-1.5 shadow-[0_28px_90px_-55px_rgba(15,23,42,0.95)]'
+        : 'rounded-[34px] border-[10px] border-slate-700 bg-slate-900 p-2 shadow-[0_28px_90px_-55px_rgba(15,23,42,0.95)]'
       : 'rounded-[38px] border-[8px] border-slate-700 bg-slate-900 p-2 shadow-[0_28px_90px_-55px_rgba(15,23,42,0.95)]';
-  const screenRadiusClass = isDesktopFrame ? 'rounded-[22px]' : isTabletFrame ? 'rounded-[24px]' : 'rounded-[30px]';
+  const screenRadiusClass = isDesktopFrame
+    ? 'rounded-[22px]'
+    : isTabletFrame
+      ? isNarrowTabletFrame
+        ? 'rounded-[18px]'
+        : 'rounded-[24px]'
+      : 'rounded-[30px]';
 
   return (
     <section className="relative rounded-3xl border border-slate-800/60 bg-slate-950/50 p-6 sm:p-10">
@@ -359,23 +493,38 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                 }}
               >
                 <div
-                  className={`relative flex max-w-full flex-shrink-0 flex-col ${isDesktopFrame ? 'pb-10' : ''}`}
+                  className="relative flex max-w-full flex-shrink-0 flex-col"
                   style={{
                     width: `${desiredWidth}px`,
                     transform: `scale(${frameScale}) translateZ(0)`,
                     transformOrigin: 'top center',
-                    transition: 'transform 200ms ease-out, width 200ms ease-out',
                   }}
                 >
                   <div className={`relative ${frameShellClass}`}>
                     {isPhoneFrame ? (
                       <div className="pointer-events-none absolute left-1/2 top-1.5 z-20 h-5 w-28 -translate-x-1/2 rounded-full bg-slate-800" />
                     ) : null}
-                    {isTabletFrame && !isPhoneFrame ? (
+                    {isTabletFrame ? (
                       <>
-                        <span className="pointer-events-none absolute left-1.5 top-1/2 h-10 w-1 -translate-y-[130%] rounded-full bg-slate-700" />
-                        <span className="pointer-events-none absolute left-1.5 top-1/2 h-14 w-1 -translate-y-[10%] rounded-full bg-slate-700" />
-                        <span className="pointer-events-none absolute right-1.5 top-1/2 h-8 w-1 -translate-y-1/2 rounded-full bg-slate-700" />
+                        <span
+                          className={`pointer-events-none absolute top-1/2 rounded-full bg-slate-700 ${
+                            isNarrowTabletFrame
+                              ? 'left-1 h-7 w-0.5 -translate-y-[135%]'
+                              : 'left-1.5 h-10 w-1 -translate-y-[130%]'
+                          }`}
+                        />
+                        <span
+                          className={`pointer-events-none absolute top-1/2 rounded-full bg-slate-700 ${
+                            isNarrowTabletFrame
+                              ? 'left-1 h-10 w-0.5 -translate-y-[10%]'
+                              : 'left-1.5 h-14 w-1 -translate-y-[10%]'
+                          }`}
+                        />
+                        <span
+                          className={`pointer-events-none absolute top-1/2 -translate-y-1/2 rounded-full bg-slate-700 ${
+                            isNarrowTabletFrame ? 'right-1 h-6 w-0.5' : 'right-1.5 h-8 w-1'
+                          }`}
+                        />
                       </>
                     ) : null}
 
@@ -386,7 +535,13 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                         className={`flex items-center justify-between border-b border-slate-800/70 bg-slate-900/60 uppercase tracking-[0.25em] text-slate-500 ${topBarClass}`}
                       >
                         <span>Linea Stories</span>
-                        <span>{isDesktopFrame ? 'Desktop Preview' : isTabletFrame ? 'Tablet Preview' : 'Phone Preview'}</span>
+                        <span>
+                          {isDesktopFrame
+                            ? content.deviceDesktop
+                            : isTabletFrame
+                              ? content.deviceTablet
+                              : content.deviceMobile}
+                        </span>
                       </div>
                       <div
                         className="relative overflow-y-auto overscroll-contain scroll-smooth no-scrollbar"
@@ -406,7 +561,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                         visibleSections.hero ? 'opacity-100 translate-y-0' : 'translate-y-6 opacity-0'
                       }`}
                     >
-                      <div className={isDesktopFrame ? 'grid grid-cols-[1.15fr,0.85fr] gap-6' : 'block'}>
+                      <div className={isDesktopLayout ? 'grid grid-cols-[1.15fr,0.85fr] gap-6' : 'block'}>
                         <div className={`flex flex-col gap-3 text-slate-100 ${isCompactFrame ? '' : 'max-w-xl'}`}>
                           <span className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-400">
                             {content.heroEyebrow}
@@ -421,7 +576,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                             {content.heroCta}
                           </button>
                         </div>
-                        {isDesktopFrame ? (
+                        {isDesktopLayout ? (
                           <div className="rounded-2xl border border-slate-800/70 bg-slate-950/50 p-4">
                             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
                               Stage Layout
@@ -429,7 +584,17 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                             <div className="mt-3 space-y-3">
                               <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
                                 <div className="mb-2 h-2 w-20 rounded-full bg-slate-700" />
-                                <div className="h-14 rounded-lg bg-gradient-to-r from-sky-500/20 to-violet-500/15" />
+                                <div className="flex h-14 items-center justify-center gap-3 rounded-lg bg-slate-900/40">
+                                  <span className="intro-icon-split-left">
+                                    <ShowcaseIcon id="film" />
+                                  </span>
+                                  <span className="intro-icon-breathe">
+                                    <ShowcaseIcon id="compass" />
+                                  </span>
+                                  <span className="intro-icon-split-right">
+                                    <ShowcaseIcon id="megaphone" />
+                                  </span>
+                                </div>
                               </div>
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 text-xs text-slate-300">
@@ -475,7 +640,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                         {[0, 1, 2].map((index) => (
                           <div
                             key={index}
-                            className={`rounded-2xl border border-slate-800/60 bg-slate-950/50 ${isPhoneFrame ? 'p-3' : 'p-4'}`}
+                            className={`rounded-2xl border border-slate-800/60 bg-slate-950/50 ${isPhoneLayout ? 'p-3' : 'p-4'}`}
                           >
                             <div className="mb-3 flex items-center justify-between text-sm text-slate-300">
                               <span>
@@ -484,8 +649,15 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                               <span className="text-xs text-slate-500">00:{(index + 1) * 15}</span>
                             </div>
                             <div
-                              className={`rounded-lg bg-gradient-to-r from-sky-500/20 via-violet-500/10 to-sky-500/20 ${isPhoneFrame ? 'h-20' : 'h-24'}`}
-                            />
+                              className={`flex items-center justify-between rounded-lg border border-slate-800/60 bg-slate-900/40 px-4 ${isPhoneLayout ? 'h-20' : 'h-24'}`}
+                            >
+                              <span className="intro-icon-bounce">
+                                <ShowcaseIcon id={timelineIconIds[index] ?? 'rocket'} className="h-7 w-7" />
+                              </span>
+                              <span className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                                Chapter {index + 1}
+                              </span>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -499,7 +671,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                         visibleSections.gallery ? 'opacity-100 translate-y-0' : 'translate-y-6 opacity-0'
                       }`}
                     >
-                      <div className={isPhoneFrame ? 'mb-4 space-y-2' : 'mb-6 space-y-2'}>
+                      <div className={isPhoneLayout ? 'mb-4 space-y-2' : 'mb-6 space-y-2'}>
                         <span className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-400">
                           {content.galleryEyebrow}
                         </span>
@@ -507,14 +679,21 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                         <p className={bodyTextClass}>{content.galleryBody}</p>
                       </div>
                       <div className={`grid gap-3 ${galleryGridClass}`}>
-                        {content.galleryCards.map((label) => (
+                        {content.galleryCards.map((label, index) => (
                           <div
                             key={label}
-                            className={`group relative overflow-hidden rounded-xl border border-slate-800/60 bg-slate-900/50 ${isPhoneFrame ? 'p-3' : 'p-4'}`}
+                            className={`group relative overflow-hidden rounded-xl border border-slate-800/60 bg-slate-900/50 ${isPhoneLayout ? 'p-3' : 'p-4'}`}
                           >
                             <div
-                              className={`rounded-lg bg-gradient-to-tr from-sky-500/20 via-sky-500/10 to-violet-500/20 ${isPhoneFrame ? 'h-24' : 'h-32'}`}
-                            />
+                              className={`flex items-center justify-center rounded-lg border border-slate-800/60 bg-slate-900/35 ${isPhoneLayout ? 'h-24' : 'h-32'}`}
+                            >
+                              <span className={index % 2 === 0 ? 'intro-icon-slide-x' : 'intro-icon-slide-x-reverse'}>
+                                <ShowcaseIcon
+                                  id={galleryIconIds[index] ?? 'spark'}
+                                  className={isPhoneLayout ? 'h-7 w-7' : 'h-8 w-8'}
+                                />
+                              </span>
+                            </div>
                             <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/10 to-slate-950/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                             <p className="relative mt-3 text-sm font-semibold text-slate-100">{label}</p>
                           </div>
@@ -541,7 +720,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                         <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-slate-800/60 bg-slate-900/50 p-4 text-sm text-slate-200">
                           <div className={`flex gap-2 ${isCompactFrame ? 'flex-col' : 'items-center justify-between'}`}>
                             <span className="min-w-0 break-words text-sm font-semibold text-slate-100">
-                              contact@lineastories.com
+                              chuanren54.gmail.com
                             </span>
                             <span className="w-fit rounded-full bg-sky-500/20 px-3 py-1 text-xs font-semibold text-sky-200">
                               {content.contactReply}
@@ -550,7 +729,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                           <div className={`flex gap-2 ${isCompactFrame ? 'flex-col' : 'items-center justify-between'}`}>
                             <span className="text-sm text-slate-200">{content.localizedFooter}</span>
                             <span className="w-fit rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400">
-                              EN / JP / ZH
+                              EN / TW-ZH
                             </span>
                           </div>
                         </div>
@@ -565,7 +744,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                     </div>
                   </div>
                   {isDesktopFrame ? (
-                    <div className="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 flex-col items-center">
+                    <div className="pointer-events-none mt-1 flex flex-col items-center">
                       <div className="h-8 w-20 rounded-b-2xl border-x border-b border-slate-700 bg-slate-900/80" />
                       <div className="mt-1 h-2 w-40 rounded-full border border-slate-700 bg-slate-900/70" />
                     </div>
@@ -605,7 +784,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                 <button
                   key={preset.id}
                   type="button"
-                  onClick={() => setViewportWidth(preset.width)}
+                  onClick={() => setSelectedPresetId(preset.id)}
                   className={`flex min-h-[78px] items-center gap-3 rounded-2xl border px-4 py-3 text-left transition ${
                     isActive
                       ? 'border-sky-400/70 bg-sky-500/15 text-sky-50 shadow-[0_12px_30px_-20px_rgba(56,189,248,0.8)]'
@@ -620,7 +799,7 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
                         : 'border-slate-700 bg-slate-950 text-slate-300'
                     }`}
                   >
-                    {preset.icon}
+                    <ShowcaseIcon id={preset.iconId} />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-sm font-semibold">{label}</span>
@@ -649,6 +828,101 @@ export function IntroShowcase({ locale }: IntroShowcaseProps) {
           </dl>
         </aside>
       </div>
+      <style jsx>{`
+        .intro-icon-bounce {
+          display: inline-flex;
+          animation: intro-bounce 1.8s ease-in-out infinite;
+        }
+        .intro-icon-breathe {
+          display: inline-flex;
+          animation: intro-breathe 2.4s ease-in-out infinite;
+        }
+        .intro-icon-split-left {
+          display: inline-flex;
+          animation: intro-split-left 2.1s ease-in-out infinite;
+        }
+        .intro-icon-split-right {
+          display: inline-flex;
+          animation: intro-split-right 2.1s ease-in-out infinite;
+        }
+        .intro-icon-slide-x {
+          display: inline-flex;
+          animation: intro-slide-x 2.2s ease-in-out infinite;
+        }
+        .intro-icon-slide-x-reverse {
+          display: inline-flex;
+          animation: intro-slide-x-reverse 2.2s ease-in-out infinite;
+        }
+        @keyframes intro-bounce {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          40% {
+            transform: translateY(-5px);
+          }
+          65% {
+            transform: translateY(2px);
+          }
+        }
+        @keyframes intro-breathe {
+          0%,
+          100% {
+            transform: scale(1);
+            opacity: 0.9;
+          }
+          50% {
+            transform: scale(1.12);
+            opacity: 1;
+          }
+        }
+        @keyframes intro-split-left {
+          0%,
+          100% {
+            transform: translateX(0) scale(1);
+          }
+          50% {
+            transform: translateX(-6px) scale(0.96);
+          }
+        }
+        @keyframes intro-split-right {
+          0%,
+          100% {
+            transform: translateX(0) scale(1);
+          }
+          50% {
+            transform: translateX(6px) scale(0.96);
+          }
+        }
+        @keyframes intro-slide-x {
+          0%,
+          100% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateX(7px);
+          }
+        }
+        @keyframes intro-slide-x-reverse {
+          0%,
+          100% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateX(-7px);
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .intro-icon-bounce,
+          .intro-icon-breathe,
+          .intro-icon-split-left,
+          .intro-icon-split-right,
+          .intro-icon-slide-x,
+          .intro-icon-slide-x-reverse {
+            animation: none;
+          }
+        }
+      `}</style>
     </section>
   );
 }

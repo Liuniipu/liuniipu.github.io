@@ -63,7 +63,6 @@ export default async function ContactPage({ params }: ContactPageProps) {
         heading={contact.heading}
         description={contact.description}
         primaryCta={contact.primaryCta}
-        secondaryCta={contact.secondaryCta}
         contacts={contact.contacts}
       />
       <SiteFooter copy={dictionary.footer.copy} items={navItems} />

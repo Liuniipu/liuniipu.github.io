@@ -12,6 +12,57 @@ import {
   type NavItem,
 } from '../../../lib/homeContent';
 
+const SocialIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-full w-full">
+    <circle cx="6" cy="7" r="2" />
+    <circle cx="18" cy="7" r="2" />
+    <circle cx="12" cy="17" r="2" />
+    <path d="M7.8 8.2 10.2 15M16.2 8.2 13.8 15M8 7h8" />
+  </svg>
+);
+
+const ResourceIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-full w-full">
+    <path d="M4 4h16v16H4z" />
+    <path d="M4 9h16M9 4v16" />
+    <circle cx="14.5" cy="14.5" r="2.5" />
+  </svg>
+);
+
+const BrandIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-full w-full">
+    <path d="M4 18V6l8-3 8 3v12l-8 3-8-3Z" />
+    <path d="M12 3v18M4 6l8 3 8-3" />
+  </svg>
+);
+
+const MobileIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-full w-full">
+    <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+    <path d="M10 5.5h4M12 18.5h.01" />
+    <path d="M5 14c2-1.5 3-2 4-2M19 14c-2-1.5-3-2-4-2" />
+  </svg>
+);
+
+const QuoteIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-full w-full">
+    <path d="M10 7H6l-2 4v6h6v-6H7.5" />
+    <path d="M20 7h-4l-2 4v6h6v-6h-2.5" />
+  </svg>
+);
+
+const brandCardDecor: Record<string, { icon: JSX.Element; animationClass: string }> = {
+  'social-platform': { icon: <SocialIcon />, animationClass: 'example-anim-flip example-delay-0' },
+  'resource-admin': { icon: <ResourceIcon />, animationClass: 'example-anim-flip example-delay-1' },
+  'branding-site': { icon: <BrandIcon />, animationClass: 'example-anim-flip example-delay-2' },
+  'mobile-app': { icon: <MobileIcon />, animationClass: 'example-anim-flip example-delay-3' },
+};
+
+const testimonialDecor: Record<string, string> = {
+  'pm-collab': 'example-anim-float-y example-delay-1',
+  'pm-delivery': 'example-anim-float-y example-delay-3',
+};
+
 type ExamplesLibraryPageProps = {
   params: Promise<{
     lang: string;
@@ -86,21 +137,34 @@ export default async function ExamplesLibraryPage({ params }: ExamplesLibraryPag
             <p className="mt-4 text-base text-slate-300 sm:text-lg">{brands.description}</p>
           </div>
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {brands.items.map((brand) => (
-              <article
-                key={brand.id}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-950/70 p-6 backdrop-blur transition hover:border-sky-400/60 hover:shadow-[0_25px_90px_-60px_rgba(56,189,248,0.65)]"
-              >
-                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
-                  {brand.sector}
-                </span>
-                <div>
-                  <h3 className="text-2xl font-semibold text-slate-100">{brand.name}</h3>
-                  <p className="mt-2 text-sm font-medium text-sky-300">{brand.headline}</p>
-                </div>
-                <p className="text-sm text-slate-300 sm:text-base">{brand.description}</p>
-              </article>
-            ))}
+            {brands.items.map((brand) => {
+              const decor = brandCardDecor[brand.id] ?? { icon: <BrandIcon />, animationClass: 'example-anim-flip' };
+
+              return (
+                <article
+                  key={brand.id}
+                  className="flex h-full flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-950/70 p-6 backdrop-blur transition hover:border-sky-400/60 hover:shadow-[0_25px_90px_-60px_rgba(56,189,248,0.65)]"
+                >
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="col-span-2">
+                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                        {brand.sector}
+                      </span>
+                      <h3 className="mt-3 text-2xl font-semibold text-slate-100">{brand.name}</h3>
+                      <p className="mt-2 text-sm font-medium text-sky-300">{brand.headline}</p>
+                    </div>
+                    <div className="col-span-1 flex items-start justify-end">
+                      <span
+                        className={`example-icon ${decor.animationClass} inline-flex h-24 w-24 rounded-2xl border border-slate-700 p-4 text-sky-300 sm:h-28 sm:w-28`}
+                      >
+                        {decor.icon}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-300 sm:text-base">{brand.description}</p>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -133,7 +197,16 @@ export default async function ExamplesLibraryPage({ params }: ExamplesLibraryPag
                 key={testimonial.id}
                 className="flex h-full flex-col justify-between gap-6 rounded-3xl border border-slate-800 bg-slate-950/70 p-6"
               >
-                <p className="text-base italic text-slate-200 sm:text-lg">&ldquo;{testimonial.quote}&rdquo;</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <p className="col-span-2 text-base italic text-slate-200 sm:text-lg">&ldquo;{testimonial.quote}&rdquo;</p>
+                  <div className="col-span-1 flex items-start justify-end">
+                    <span
+                      className={`example-icon ${testimonialDecor[testimonial.id] ?? 'example-anim-float-y'} inline-flex h-20 w-20 rounded-2xl border border-slate-700 p-4 text-sky-300 sm:h-24 sm:w-24`}
+                    >
+                      <QuoteIcon />
+                    </span>
+                  </div>
+                </div>
                 <footer className="text-sm text-slate-400">
                   <div className="font-semibold text-slate-100">{testimonial.author}</div>
                   <div>

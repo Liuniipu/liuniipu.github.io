@@ -1,8 +1,14 @@
-'use client';
+﻿'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { Locale } from '../../lib/homeContent';
+
+type MarketOption = {
+  id: string;
+  label: Record<Locale, string>;
+  price: number;
+};
 
 type MarketItem = {
   id: string;
@@ -11,11 +17,13 @@ type MarketItem = {
   category: Record<Locale, string>;
   summary: Record<Locale, string>;
   description: Record<Locale, string>;
-  price: number;
+  options: readonly MarketOption[];
 };
 
 type CartEntry = {
+  key: string;
   item: MarketItem;
+  option: MarketOption;
   quantity: number;
 };
 
@@ -31,6 +39,23 @@ type Copy = {
   addLabel: string;
   quantityLabel: string;
   totalLabel: string;
+  optionLabel: string;
+  optionHelp: string;
+  selectOptionFirst: string;
+  addedNotice: string;
+  removedNotice: string;
+  removeGuardTitle: string;
+  removeGuardMessage: string;
+  cancelLabel: string;
+  confirmRemoveLabel: string;
+};
+
+type NoticeTone = 'success' | 'warning';
+
+type Notice = {
+  id: number;
+  message: string;
+  tone: NoticeTone;
 };
 
 type MarketCartDemoProps = {
@@ -41,62 +66,93 @@ const rawItems: readonly MarketItem[] = [
   {
     id: 'clothes',
     icon: '👕',
-    name: { en: 'Clothes', zh: '\u8863\u670d' },
-    category: { en: 'Apparel', zh: '\u670d\u98fe' },
+    name: { en: 'Top', zh: '上衣' },
+    category: { en: 'Apparel', zh: '服飾' },
     summary: {
-      en: 'Daily wear picks for casual and office use.',
-      zh: '\u9069\u5408\u65e5\u5e38\u8207\u4e0a\u73ed\u7a7f\u642d\u7684\u57fa\u790e\u6b3e\u3002',
+      en: 'Daily wear tops in three sizes: S, M, and L.',
+      zh: '日常穿搭上衣，提供 S、M、L 三種尺寸。',
     },
     description: {
-      en: 'Soft, easy-care clothing set focused on comfort, fit, and repeat wear. Ideal for quick styling suggestions in a shopping flow demo.',
-      zh: '\u4ee5\u8212\u9069\u3001\u597d\u642d\u914d\u8207\u6613\u65bc\u6e05\u6f54\u70ba\u91cd\u9ede\u7684\u8863\u7269\u7d44\u5408\uff0c\u9069\u5408\u7528\u65bc\u6f14\u793a\u8cfc\u7269\u6d41\u7a0b\u4e2d\u7684\u7a7f\u642d\u63a8\u85a6\u3002',
+      en: 'Comfort-first tops suitable for daily wear and office styling. Pick your size before adding to cart.',
+      zh: '以舒適與好搭配為主的上衣，適合日常與通勤。加入購物車前可先選擇尺寸。',
     },
-    price: 42,
+    options: [
+      { id: 's', label: { en: 'Size S', zh: 'S 尺寸' }, price: 42 },
+      { id: 'm', label: { en: 'Size M', zh: 'M 尺寸' }, price: 42 },
+      { id: 'l', label: { en: 'Size L', zh: 'L 尺寸' }, price: 42 },
+    ],
   },
   {
     id: 'toys',
     icon: '🧸',
-    name: { en: 'Toys', zh: '\u73a9\u5177' },
-    category: { en: 'Kids & fun', zh: '\u5152\u7ae5\u8207\u5a1b\u6a02' },
+    name: { en: 'Blind Box', zh: '盒玩' },
+    category: { en: 'Collectibles', zh: '收藏玩具' },
     summary: {
-      en: 'Gift-ready toys for playtime and early learning.',
-      zh: '\u9069\u5408\u9001\u79ae\u8207\u89aa\u5b50\u4e92\u52d5\u7684\u73a9\u5177\u9078\u54c1\u3002',
+      en: 'Choose one animal style or buy the full six-piece set.',
+      zh: '可選單一動物款，或直接購買六款全套。',
     },
     description: {
-      en: 'A curated toy category covering plush, blocks, and educational play items. Designed to demonstrate browsing and cart actions with clear product cues.',
-      zh: '\u7cbe\u9078\u6bdb\u7d68\u3001\u7a4d\u6728\u8207\u76ca\u667a\u985e\u73a9\u5177\uff0c\u9069\u5408\u6f14\u793a\u5206\u985e\u700f\u89bd\u8207\u52a0\u5165\u8cfc\u7269\u8eca\u4e92\u52d5\u3002',
+      en: 'Single figure options include dog, cat, lion, elephant, whale, and chicken. Full set includes all six animals.',
+      zh: '單款提供狗、貓、獅子、大象、鯨魚、雞；也可選擇一次購買六款完整套組。',
     },
-    price: 28,
+    options: [
+      { id: 'dog', label: { en: 'Dog', zh: '狗' }, price: 28 },
+      { id: 'cat', label: { en: 'Cat', zh: '貓' }, price: 28 },
+      { id: 'lion', label: { en: 'Lion', zh: '獅子' }, price: 28 },
+      { id: 'elephant', label: { en: 'Elephant', zh: '大象' }, price: 28 },
+      { id: 'whale', label: { en: 'Whale', zh: '鯨魚' }, price: 28 },
+      { id: 'chicken', label: { en: 'Chicken', zh: '雞' }, price: 28 },
+      { id: 'full-set', label: { en: 'Full Set (6)', zh: '六款全套' }, price: 149 },
+    ],
   },
   {
     id: 'cabinet',
     icon: '🗄️',
-    name: { en: 'Cabinet', zh: '\u6ac3\u5b50' },
-    category: { en: 'Furniture', zh: '\u5bb6\u5177' },
+    name: { en: 'Cabinet', zh: '櫃子' },
+    category: { en: 'Furniture', zh: '家具' },
     summary: {
-      en: 'Compact storage cabinet for home office organization.',
-      zh: '\u9069\u5408\u5bb6\u4e2d\u6216\u8fa6\u516c\u7a7a\u9593\u7684\u6536\u7d0d\u6ac3\u3002',
+      en: 'Storage cabinet available in black, gray, and white.',
+      zh: '收納櫃提供黑、灰、白三種顏色可選。',
     },
     description: {
-      en: 'A practical cabinet option with multi-shelf storage and a clean silhouette. Useful for showcasing higher-value items in the cart experience.',
-      zh: '\u63d0\u4f9b\u591a\u5c64\u6536\u7d0d\u8207\u7c21\u6f54\u5916\u89c0\u7684\u6ac3\u9ad4\uff0c\u9069\u5408\u5728\u8cfc\u7269\u8eca\u9ad4\u9a57\u4e2d\u6f14\u793a\u8f03\u9ad8\u55ae\u50f9\u5546\u54c1\u3002',
+      en: 'Compact multi-shelf cabinet for home office organization, with three color options for different interiors.',
+      zh: '多層收納設計，適合居家與辦公空間。可依環境挑選黑色、灰色或白色。',
     },
-    price: 189,
+    options: [
+      { id: 'black', label: { en: 'Black', zh: '黑色' }, price: 189 },
+      { id: 'gray', label: { en: 'Gray', zh: '灰色' }, price: 189 },
+      { id: 'white', label: { en: 'White', zh: '白色' }, price: 189 },
+    ],
   },
   {
     id: 'computer',
     icon: '💻',
-    name: { en: 'Computer', zh: '\u96fb\u8166' },
-    category: { en: 'Electronics', zh: '\u96fb\u5b50\u7522\u54c1' },
+    name: { en: 'Computer', zh: '電腦' },
+    category: { en: 'Electronics', zh: '電子產品' },
     summary: {
-      en: 'Performance-focused desktop setup for work and creation.',
-      zh: '\u9069\u5408\u5de5\u4f5c\u8207\u5275\u4f5c\u7684\u6548\u80fd\u578b\u96fb\u8166\u9078\u9805\u3002',
+      en: 'Three bundles: Basic, Standard, and Upgrade.',
+      zh: '三種方案：簡單、標準、升級。',
     },
     description: {
-      en: 'A computer bundle positioned for productivity tasks and creative software. This gives the demo a premium category with distinct pricing behavior.',
-      zh: '\u4ee5\u751f\u7522\u529b\u8207\u5275\u4f5c\u8edf\u9ad4\u4f7f\u7528\u60c5\u5883\u70ba\u5c0e\u5411\u7684\u96fb\u8166\u7d44\u5408\uff0c\u8b93\u7bc4\u4f8b\u5305\u542b\u9ad8\u55ae\u50f9\u985e\u5225\u3002',
+      en: 'Basic includes laptop. Standard adds a bag. Upgrade includes laptop, bag, mouse, and cooling pad.',
+      zh: '簡單版含筆電；標準版含筆電+包包；升級版含筆電+包包+滑鼠+散熱墊。',
     },
-    price: 899,
+    options: [
+      { id: 'basic', label: { en: 'Basic (Laptop)', zh: '簡單（筆電）' }, price: 899 },
+      {
+        id: 'standard',
+        label: { en: 'Standard (Laptop + Bag)', zh: '標準（筆電+包包）' },
+        price: 979,
+      },
+      {
+        id: 'upgrade',
+        label: {
+          en: 'Upgrade (Laptop + Bag + Mouse + Cooling Pad)',
+          zh: '升級（筆電+包包+滑鼠+散熱墊）',
+        },
+        price: 1069,
+      },
+    ],
   },
 ];
 
@@ -113,74 +169,153 @@ const marketCopy: Record<Locale, Copy> = {
     addLabel: 'Add to cart',
     quantityLabel: 'In cart',
     totalLabel: 'Projected total',
+    optionLabel: 'Option',
+    optionHelp: 'Select a configuration before adding this item.',
+    selectOptionFirst: 'Please choose an option before adding this item.',
+    addedNotice: 'Added to cart.',
+    removedNotice: 'Item removed from cart.',
+    removeGuardTitle: 'Remove this item?',
+    removeGuardMessage: 'This action will remove the selected option from your cart.',
+    cancelLabel: 'Cancel',
+    confirmRemoveLabel: 'Confirm remove',
   },
   zh: {
-    heading: '\u5e02\u5834\u8ca8\u7d44\u7de8\u6392',
-    subheading: '\u6f14\u793a\u5546\u54c1\u700f\u89bd\u3001\u5546\u54c1\u4ecb\u7d39 modal \u8207\u8cfc\u7269\u8eca\u4e92\u52d5\u6d41\u7a0b\u3002',
-    cartLabel: '\u8cfc\u7269\u8eca\u6982\u89bd',
-    cartButton: '\u67e5\u770b\u8cfc\u7269\u8eca',
-    emptyCart: '\u8cfc\u7269\u8eca\u76ee\u524d\u70ba\u7a7a\u3002\u5148\u65b0\u589e\u9805\u76ee\u5373\u53ef\u67e5\u770b\u9810\u6e2c\u7e3d\u984d\u3002',
-    removeLabel: '\u79fb\u9664',
-    closeLabel: '\u95dc\u9589',
-    detailsLabel: '\u5546\u54c1\u4ecb\u7d39',
-    addLabel: '\u52a0\u5165\u8cfc\u7269\u8eca',
-    quantityLabel: '\u5df2\u52a0\u5165',
-    totalLabel: '\u9810\u6e2c\u7e3d\u984d',
+    heading: '市場貨組編排',
+    subheading: '演示商品瀏覽、商品介紹 modal 與購物車互動流程。',
+    cartLabel: '購物車概覽',
+    cartButton: '查看購物車',
+    emptyCart: '購物車目前為空。先新增項目即可查看預測總額。',
+    removeLabel: '移除',
+    closeLabel: '關閉',
+    detailsLabel: '商品介紹',
+    addLabel: '加入購物車',
+    quantityLabel: '已加入',
+    totalLabel: '預測總額',
+    optionLabel: '方案',
+    optionHelp: '加入商品前，請先選擇規格。',
+    selectOptionFirst: '請先選擇規格，再加入購物車。',
+    addedNotice: '已加入購物車。',
+    removedNotice: '已從購物車移除。',
+    removeGuardTitle: '確定要移除此項目？',
+    removeGuardMessage: '此動作會將該規格商品從購物車中刪除。',
+    cancelLabel: '取消',
+    confirmRemoveLabel: '確認移除',
   },
 };
+
+const TWD_EXCHANGE_RATE = 32;
 
 export function MarketCartDemo({ locale }: MarketCartDemoProps) {
   const [cart, setCart] = useState<CartEntry[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
+  const [pendingRemoval, setPendingRemoval] = useState<CartEntry | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() =>
+    Object.fromEntries(rawItems.map((item) => [item.id, ''])),
+  );
 
   const copy = marketCopy[locale] ?? marketCopy.en;
+  const currencyCode = locale === 'zh' ? 'TWD' : 'USD';
 
   let formatter: Intl.NumberFormat | null = null;
   try {
     formatter = new Intl.NumberFormat(locale === 'zh' ? 'zh-TW' : 'en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: currencyCode,
       maximumFractionDigits: 0,
     });
   } catch {
     formatter = null;
   }
 
-  const formatCurrency = (value: number) => {
-    if (formatter) {
-      return formatter.format(value);
+  useEffect(() => {
+    if (!notice) {
+      return undefined;
     }
-    const amount = Math.round(value).toLocaleString(locale === 'zh' ? 'zh-TW' : 'en-US');
-    return locale === 'zh' ? `US$${amount}` : `$${amount}`;
+
+    const timer = window.setTimeout(() => {
+      setNotice((current) => (current?.id === notice.id ? null : current));
+    }, 2200);
+
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+
+  const toDisplayPrice = (usdValue: number) =>
+    locale === 'zh' ? Math.round(usdValue * TWD_EXCHANGE_RATE) : usdValue;
+
+  const formatCurrency = (usdValue: number) => {
+    const displayPrice = toDisplayPrice(usdValue);
+    if (formatter) {
+      return formatter.format(displayPrice);
+    }
+    const amount = Math.round(displayPrice).toLocaleString(locale === 'zh' ? 'zh-TW' : 'en-US');
+    return locale === 'zh' ? `NT$${amount}` : `$${amount}`;
   };
 
-  const handleAdd = (item: MarketItem) => {
-    setCart((previous) => {
-      const existing = previous.find((entry) => entry.item.id === item.id);
-      if (existing) {
-        return previous.map((entry) =>
-          entry.item.id === item.id
-            ? { ...entry, quantity: entry.quantity + 1 }
-            : entry,
-        );
-      }
-      return [...previous, { item, quantity: 1 }];
+  const pushNotice = (message: string, tone: NoticeTone) => {
+    setNotice({
+      id: Date.now(),
+      message,
+      tone,
     });
   };
 
-  const handleRemove = (id: string) => {
-    setCart((previous) => previous.filter((entry) => entry.item.id !== id));
-  };
-
-  const getItemQuantity = (id: string) =>
-    cart.find((entry) => entry.item.id === id)?.quantity ?? 0;
-
   const getText = (value: Record<Locale, string>) => value[locale] ?? value.en;
 
-  const total = cart.reduce((sum, entry) => sum + entry.item.price * entry.quantity, 0);
+  const getSelectedOption = (item: MarketItem) => {
+    const optionId = selectedOptions[item.id];
+    return item.options.find((option) => option.id === optionId);
+  };
+
+  const selectOption = (itemId: string, optionId: string) => {
+    setSelectedOptions((previous) => ({ ...previous, [itemId]: optionId }));
+  };
+
+  const handleAdd = (item: MarketItem, option: MarketOption) => {
+    const key = `${item.id}:${option.id}`;
+    setCart((previous) => {
+      const existing = previous.find((entry) => entry.key === key);
+      if (existing) {
+        return previous.map((entry) =>
+          entry.key === key ? { ...entry, quantity: entry.quantity + 1 } : entry,
+        );
+      }
+      return [...previous, { key, item, option, quantity: 1 }];
+    });
+    pushNotice(copy.addedNotice, 'success');
+  };
+
+  const handleQuickAdd = (item: MarketItem) => {
+    const selectedOption = getSelectedOption(item);
+    if (!selectedOption) {
+      setActiveItemId(item.id);
+      pushNotice(copy.selectOptionFirst, 'warning');
+      return;
+    }
+
+    handleAdd(item, selectedOption);
+  };
+
+  const confirmRemoval = () => {
+    if (!pendingRemoval) {
+      return;
+    }
+
+    setCart((previous) => previous.filter((entry) => entry.key !== pendingRemoval.key));
+    setPendingRemoval(null);
+    pushNotice(copy.removedNotice, 'warning');
+  };
+
+  const getItemQuantity = (itemId: string) =>
+    cart
+      .filter((entry) => entry.item.id === itemId)
+      .reduce((count, entry) => count + entry.quantity, 0);
+
+  const total = cart.reduce((sum, entry) => sum + entry.option.price * entry.quantity, 0);
   const cartCount = cart.reduce((count, entry) => count + entry.quantity, 0);
   const activeItem = rawItems.find((item) => item.id === activeItemId) ?? null;
+  const activeOption = activeItem ? getSelectedOption(activeItem) : null;
 
   return (
     <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6 shadow-[0_20px_80px_-40px_rgba(14,116,144,0.65)] sm:p-8">
@@ -203,6 +338,8 @@ export function MarketCartDemo({ locale }: MarketCartDemoProps) {
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         {rawItems.map((item) => {
           const quantity = getItemQuantity(item.id);
+          const selectedOption = getSelectedOption(item);
+          const displayPrice = selectedOption?.price ?? item.options[0]?.price ?? 0;
 
           return (
             <article
@@ -224,7 +361,7 @@ export function MarketCartDemo({ locale }: MarketCartDemoProps) {
                       {getText(item.category)}
                     </p>
                     <h3 className="text-lg font-semibold text-slate-100">{getText(item.name)}</h3>
-                    <p className="text-sm font-medium text-sky-300">{formatCurrency(item.price)}</p>
+                    <p className="text-sm font-medium text-sky-300">{formatCurrency(displayPrice)}</p>
                   </div>
                 </div>
                 <p className="text-sm text-slate-400">{getText(item.summary)}</p>
@@ -239,7 +376,7 @@ export function MarketCartDemo({ locale }: MarketCartDemoProps) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleAdd(item)}
+                  onClick={() => handleQuickAdd(item)}
                   className="inline-flex items-center justify-center rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
                 >
                   {copy.addLabel}
@@ -285,7 +422,7 @@ export function MarketCartDemo({ locale }: MarketCartDemoProps) {
                 <ul className="space-y-3">
                   {cart.map((entry) => (
                     <li
-                      key={entry.item.id}
+                      key={entry.key}
                       className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/50 p-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex items-center gap-3">
@@ -293,21 +430,20 @@ export function MarketCartDemo({ locale }: MarketCartDemoProps) {
                           <span aria-hidden="true">{entry.item.icon}</span>
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-slate-100">
-                            {getText(entry.item.name)}
-                          </p>
+                          <p className="text-sm font-semibold text-slate-100">{getText(entry.item.name)}</p>
+                          <p className="text-xs text-slate-400">{getText(entry.option.label)}</p>
                           <p className="text-xs text-slate-400">
-                            {formatCurrency(entry.item.price)} x {entry.quantity}
+                            {formatCurrency(entry.option.price)} x {entry.quantity}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-slate-200">
-                          {formatCurrency(entry.item.price * entry.quantity)}
+                          {formatCurrency(entry.option.price * entry.quantity)}
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleRemove(entry.item.id)}
+                          onClick={() => setPendingRemoval(entry)}
                           className="rounded-full border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition hover:border-rose-500/60 hover:text-rose-200"
                         >
                           {copy.removeLabel}
@@ -348,11 +484,9 @@ export function MarketCartDemo({ locale }: MarketCartDemoProps) {
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                     {getText(activeItem.category)}
                   </p>
-                  <h3 className="text-lg font-semibold text-slate-100">
-                    {getText(activeItem.name)}
-                  </h3>
+                  <h3 className="text-lg font-semibold text-slate-100">{getText(activeItem.name)}</h3>
                   <p className="text-sm font-medium text-sky-300">
-                    {formatCurrency(activeItem.price)}
+                    {activeOption ? formatCurrency(activeOption.price) : ''}
                   </p>
                 </div>
               </div>
@@ -365,9 +499,34 @@ export function MarketCartDemo({ locale }: MarketCartDemoProps) {
               </button>
             </div>
 
-            <p className="mt-4 text-sm leading-6 text-slate-300">
-              {getText(activeItem.description)}
-            </p>
+            <p className="mt-4 text-sm leading-6 text-slate-300">{getText(activeItem.description)}</p>
+
+            <div className="mt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                {copy.optionLabel}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">{copy.optionHelp}</p>
+              <div className="mt-3 grid gap-2">
+                {activeItem.options.map((option) => {
+                  const isSelected = activeOption?.id === option.id;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => selectOption(activeItem.id, option.id)}
+                      className={`flex items-center justify-between rounded-xl border px-3 py-2 text-sm transition ${
+                        isSelected
+                          ? 'border-sky-400/70 bg-sky-500/10 text-sky-100'
+                          : 'border-slate-700 bg-slate-950/40 text-slate-200 hover:border-slate-500'
+                      }`}
+                    >
+                      <span>{getText(option.label)}</span>
+                      <span className="font-semibold">{formatCurrency(option.price)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             <div className="mt-5 flex flex-wrap items-center gap-2">
               {getItemQuantity(activeItem.id) > 0 ? (
@@ -377,12 +536,73 @@ export function MarketCartDemo({ locale }: MarketCartDemoProps) {
               ) : null}
               <button
                 type="button"
-                onClick={() => handleAdd(activeItem)}
-                className="inline-flex items-center justify-center rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
+                onClick={() => {
+                  if (!activeOption) {
+                    pushNotice(copy.selectOptionFirst, 'warning');
+                    return;
+                  }
+                  handleAdd(activeItem, activeOption);
+                }}
+                disabled={!activeOption}
+                aria-disabled={!activeOption}
+                className="inline-flex items-center justify-center rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
               >
                 {copy.addLabel}
               </button>
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {pendingRemoval ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/85 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={copy.removeGuardTitle}
+          onClick={() => setPendingRemoval(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl sm:p-6"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold text-slate-100">{copy.removeGuardTitle}</h3>
+            <p className="mt-2 text-sm text-slate-300">{copy.removeGuardMessage}</p>
+            <p className="mt-2 text-xs text-slate-400">
+              {getText(pendingRemoval.item.name)} - {getText(pendingRemoval.option.label)}
+            </p>
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setPendingRemoval(null)}
+                className="rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-slate-500"
+              >
+                {copy.cancelLabel}
+              </button>
+              <button
+                type="button"
+                onClick={confirmRemoval}
+                className="rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-400"
+              >
+                {copy.confirmRemoveLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {notice ? (
+        <div className="pointer-events-none fixed bottom-4 right-4 z-[70]">
+          <div
+            className={`rounded-xl border px-4 py-3 text-sm font-semibold shadow-xl ${
+              notice.tone === 'success'
+                ? 'border-emerald-400/40 bg-emerald-500/20 text-emerald-100'
+                : 'border-amber-400/40 bg-amber-500/20 text-amber-100'
+            }`}
+            role="status"
+            aria-live="polite"
+          >
+            {notice.message}
           </div>
         </div>
       ) : null}

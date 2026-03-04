@@ -47,7 +47,6 @@ export default async function LocalePage({ params }: LocalePageProps) {
       <HeroSection
         slides={dictionary.hero.slides}
         ctas={dictionary.hero.ctas}
-        card={dictionary.hero.card}
         navigationLabels={dictionary.hero.navigationLabels}
         stats={dictionary.hero.stats}
         startHref={`/${locale}/contact`}
@@ -70,7 +69,6 @@ export default async function LocalePage({ params }: LocalePageProps) {
         heading={dictionary.contact.heading}
         description={dictionary.contact.description}
         primaryCta={dictionary.contact.primaryCta}
-        secondaryCta={dictionary.contact.secondaryCta}
         contacts={dictionary.contact.contacts}
       />
       <SiteFooter copy={dictionary.footer.copy} items={dictionary.navigation.items} />

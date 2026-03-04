@@ -73,6 +73,7 @@ type HeroContent = {
   ctas: {
     explore: string;
     start: string;
+    exploreBySlide?: Record<string, string>;
   };
   card: {
     indicatorTemplate: string;
@@ -137,7 +138,6 @@ type ContactContent = {
   heading: string;
   description: string;
   primaryCta: string;
-  secondaryCta: string;
   contacts: readonly ContactDetail[];
 };
 type FooterContent = {
@@ -160,7 +160,7 @@ export const localeOptions: readonly LocaleOption[] = [
 const dictionaries: Record<Locale, Dictionary> = {
   en: {
     navigation: {
-      brand: 'liuniipu',
+      brand: 'HY',
       items: [
         { label: 'Home', href: '#home' },
         { label: 'Examples', href: '/en/examples' },
@@ -187,44 +187,62 @@ const dictionaries: Record<Locale, Dictionary> = {
       slides: [
         {
           id: 'experience',
-          label: 'Experience Design',
-          title: 'Crafting calm, connected web journeys.',
+          label: 'Case Highlights',
+          title: 'Focused implementations across four real project directions.',
           description:
-            'Pair thoughtful storytelling with motion that guides, never distracts. Every interaction is tuned for clarity, focus, and performance.',
+            'From social platforms and resource-management dashboards to brand websites and mobile apps, each case is built around specific business goals and user behavior.',
           bullets: [
-            'Accessible-first interface patterns',
-            'Micro-interactions that explain complex flows',
-            'Performance budgets for responsive apps',
+            'Social platform: balances privacy and communication features.',
+            'Resource management admin: translates operations into clear workflows.',
+            'Brand website and mobile app: sharp storytelling plus map-enabled utility.',
           ],
         },
         {
           id: 'collaboration',
-          label: 'Product Collaboration',
-          title: 'Shaping ideas with product and marketing teams.',
+          label: 'Tech Stack',
+          title: 'A practical stack designed for speed and reliability.',
           description:
-            'I build bridges between stakeholders, translating brand strategy into living design systems and production-ready components.',
+            'The implementation combines React/Next.js and Vue/Nuxt for front-end flexibility, with MySQL and PostgreSQL for stable transaction and analytics support.',
           bullets: [
-            'Figma to production component pipelines',
-            'Design tokens that scale between stacks',
-            'Rapid prototyping to validate concepts quickly',
+            'React + Next.js for SEO-ready interfaces and modular components.',
+            'Vue + Nuxt for campaign and content-driven delivery.',
+            'MySQL/PostgreSQL for operational data and analytical depth.',
           ],
         },
         {
           id: 'delivery',
-          label: 'Delivery & Growth',
-          title: 'From prototype to launch-ready experiences.',
+          label: 'Try-Now Preview',
+          title: 'Interactive demos that turn ideas into visible workflows.',
           description:
-            'Own the front-end launch plan, keep QA tight, and translate insights into measurable improvements sprint after sprint.',
+            'The try-now area includes a market cart flow, intro showcase, modular feature board, and chat-based app prototype for rapid concept validation.',
           bullets: [
-            'Automated regression-friendly UI architecture',
-            'CSAT and UX metric dashboards for stakeholders',
-            'Iterative rollouts with A/B tracking hooks',
+            'Explore how each interaction feels before project kickoff.',
+            'Compare UI patterns and data logic in one place.',
+            'Shorten communication cycles between planning and implementation.',
+          ],
+        },
+        {
+          id: 'contact',
+          label: 'Contact & Collaboration',
+          title: 'Open a conversation and shape the project blueprint together.',
+          description:
+            'Share your direction, timeline, and product goals. We can align scope quickly and move from idea to delivery with clear next steps.',
+          bullets: [
+            'Send an email to start practical planning.',
+            'Clarify priority milestones and release expectations.',
+            'Turn concepts into an actionable implementation roadmap.',
           ],
         },
       ],
       ctas: {
         explore: 'Explore examples',
         start: 'Start a project',
+        exploreBySlide: {
+          experience: 'View case highlights',
+          collaboration: 'View tech stack',
+          delivery: 'Try interactive demos',
+          contact: 'Contact now',
+        },
       },
       card: {
         indicatorTemplate: 'Slide {current} of {total}',
@@ -261,13 +279,12 @@ const dictionaries: Record<Locale, Dictionary> = {
       projects: [
         {
           id: 'market',
-          title: 'Market Pulse Dashboard',
+          title: 'Market Cart Experience',
           description:
             'Real-time analytics workspace visualizing multi-market inventory, alerts, and price movements for trading teams.',
           highlights: [
-            'Role: UI Architecture and Motion',
-            'Stack: Next.js, Tailwind, D3',
-            'Outcome: 22% drop in time-to-insight',
+            'Use case: E-commerce and direct-to-consumer storefronts.',
+            'Explanation: A clean interface shortens decision paths and improves shopping confidence.',
           ],
         },
         {
@@ -276,9 +293,8 @@ const dictionaries: Record<Locale, Dictionary> = {
           description:
             'Immersive scrolling story introducing a new product line with modular chapters, hero animations, and localization-ready content.',
           highlights: [
-            'Role: Creative Direction and Frontend',
-            'Stack: React, Framer Motion',
-            'Outcome: 3x engagement over static press kit',
+            'Use case: Brand campaign sites and product launch pages.',
+            'Explanation: Scroll-driven storytelling makes key messages easier to absorb and remember.',
           ],
         },
         {
@@ -287,9 +303,8 @@ const dictionaries: Record<Locale, Dictionary> = {
           description:
             'Configurable module catalog that spotlights plug-and-play bundles with live previews, usage recipes, and documentation callouts.',
           highlights: [
-            'Role: Product Marketing Engineering',
-            'Stack: Next.js, MDX, Radix UI',
-            'Outcome: 30% lift in module activation rate',
+            'Use case: Admin tools and modular product platforms.',
+            'Explanation: Drag-and-drop composition helps teams understand feature combinations quickly.',
           ],
         },
         {
@@ -298,9 +313,8 @@ const dictionaries: Record<Locale, Dictionary> = {
           description:
             'Hybrid app for field partners with offline-ready checklists, QR flows, and sync dashboards tailored to on-the-go contexts.',
           highlights: [
-            'Role: Design Systems and Development',
-            'Stack: React Native, Zustand',
-            'Outcome: 40% faster weekly reporting',
+            'Use case: Customer support entry points and guided FAQ flows.',
+            'Explanation: Preset prompts and progressive replies lower communication friction.',
           ],
         },
       ],
@@ -315,57 +329,37 @@ const dictionaries: Record<Locale, Dictionary> = {
         ctaHref: '/en/contact',
       },
       brands: {
-        heading: 'Mock brands at a glance',
-        description:
-          'Each concept highlights a different customer journey while sharing the same component foundation.',
+        heading: 'Example projects at a glance',
+        description: 'Four practical directions from planning to delivery, each with clear product outcomes.',
         items: [
           {
-            id: 'aurora-exchange',
-            name: 'Aurora Exchange',
-            sector: 'Fintech SaaS',
-            headline: 'Trading clarity for global teams',
+            id: 'social-platform',
+            name: 'Social Platform',
+            sector: 'Social Platform',
+            headline: 'From data schema planning to API integration and front-end delivery',
             description:
-              'Cross-market alerts, liquidity insights, and compliance-ready exports packaged in a calm, data-first interface.',
+              'Built with popular interaction features while balancing privacy and open communication.',
           },
-        {
-            id: 'pulse-ledger',
-            name: 'Pulse Ledger',
-            sector: 'Payments platform',
-            headline: 'Revenue intelligence without spreadsheets',
-            description:
-              'Executive dashboards pair KPI storytelling with drill-down ledgers so finance leads can plan faster.',
+          {
+            id: 'resource-admin',
+            name: 'Resource Management Admin',
+            sector: 'Resource Management',
+            headline: 'Mapped cross-team workflows and resources, then designed and implemented core logic',
+            description: 'A direct and easy-to-use interface helps teams grasp operational status quickly.',
           },
-        {
-            id: 'nova-health',
-            name: 'NovaHealth Loop',
-            sector: 'Digital health',
-            headline: 'Care teams stay aligned in seconds',
-            description:
-              'Modular visit timelines surface triage decisions, follow ups, and goals for multidisciplinary clinics.',
+          {
+            id: 'branding-site',
+            name: 'Brand Website',
+            sector: 'Brand Website',
+            headline: 'Organized product strengths into an interactive, attention-grabbing web experience',
+            description: 'Communicates value propositions quickly and effectively.',
           },
-        {
-            id: 'linea-stories',
-            name: 'Linea Stories',
-            sector: 'Media publishing',
-            headline: 'Narratives launch with motion-first storytelling',
-            description:
-              'Interactive chapters blend typography, video, and ambient audio controls for editorial launch teams.',
-          },
-        {
-            id: 'orbit-mobility',
-            name: 'Orbit Mobility',
-            sector: 'Mobility marketplace',
-            headline: 'Scale rider trust at city speed',
-            description:
-              'Dynamic pricing guardrails, surge controls, and support macros keep operations ahead of demand.',
-          },
-        {
-            id: 'kindred-markets',
-            name: 'Kindred Markets',
-            sector: 'Community commerce',
-            headline: 'Shop-in-shop experiences with heart',
-            description:
-              'Personalized collections, loyalty tiers, and live service handoffs maintain neighborhood energy online.',
+          {
+            id: 'mobile-app',
+            name: 'Mobile App',
+            sector: 'Mobile App',
+            headline: 'App planning and development for real-world usage',
+            description: 'Integrated map services with custom locations and quick navigation flows.',
           },
         ],
       },
@@ -385,31 +379,23 @@ const dictionaries: Record<Locale, Dictionary> = {
       },
       testimonials: {
         heading: 'PM perspectives',
-        description: 'Partner product managers share how these examples accelerate alignment.',
+        description: 'Feedback from PM-facing collaborations.',
         items: [
           {
-            id: 'northbeam-pm',
+            id: 'pm-collab',
             quote:
-              'The mock handoffs made it painless to communicate scope with stakeholders; everything felt pitch-ready in one review.',
-            author: 'Elaine Chou',
-            role: 'Product Manager',
-            company: 'Northbeam Logistics',
+              'A highly communicative engineer who is willing to explore different possibilities and back them with analysis.',
+            author: 'Collaboration Manager',
+            role: 'PM',
+            company: 'Collaboration Manager',
           },
-        {
-            id: 'orbit-pm',
+          {
+            id: 'pm-delivery',
             quote:
-              'Shared design tokens let our mobile and web squads ideate together. We shipped a cohesive story without slowing engineering.',
-            author: 'Miguel Rivera',
-            role: 'Senior PM',
-            company: 'Orbit Mobility',
-          },
-        {
-            id: 'storyforge-pm',
-            quote:
-              'Even our brand team could riff on the motion system. Seeing variations across mock brands sparked faster content decisions.',
-            author: 'Priya Desai',
-            role: 'Lead PM',
-            company: 'Storyforge Media',
+              'Delivers on time, goes deep in discussions, and identifies the real bottlenecks.',
+            author: 'Product Manager',
+            role: 'PM',
+            company: 'Product Manager',
           },
         ],
       },
@@ -468,9 +454,9 @@ const dictionaries: Record<Locale, Dictionary> = {
           description:
             'Opinionated use of the App Router to balance dynamic product surfaces with predictable build pipelines.',
           points: [
-            'Compose server and client components with Suspense to keep interactions responsive.',
-            'Model data flows with Server Actions, Route Handlers, and edge-friendly caching policies.',
-            'Codify shared patterns via Storybook-ready UI primitives and Tailwind tokens.',
+            'Best for: Marketing sites, SaaS dashboards, and content-heavy web apps.',
+            'Team example: Built by the Meta (Facebook) engineering team and used across Facebook and Instagram web surfaces.',
+            'Advantages: Massive ecosystem, component reuse, and smooth SSR/SEO support when paired with Next.js.',
           ],
         },
         {
@@ -480,9 +466,9 @@ const dictionaries: Record<Locale, Dictionary> = {
           description:
             'Nuxt 3 foundations mirroring React feature sets so marketing and product teams stay aligned.',
           points: [
-            'Leverage file-based routing, layouts, and middleware for campaign-ready pages.',
-            'Use the Composition API and Pinia stores to encapsulate complex UI state.',
-            'Generate static and hybrid deployments with Nuxt Content and server routes.',
+            'Best for: Content websites, campaign pages, and mid-sized web products.',
+            'Team example: Driven by Nuxt Labs and the Vue core ecosystem, adopted by teams such as GitLab for Vue-based frontends.',
+            'Advantages: Clear file-based structure, fast onboarding, and strong SSR/static generation capabilities.',
           ],
         },
         {
@@ -492,9 +478,9 @@ const dictionaries: Record<Locale, Dictionary> = {
           description:
             'Structured relational design that favors clarity and predictable scaling for transactional workloads.',
           points: [
-            'Map domain models with normalization, foreign keys, and read-optimized indexes.',
-            'Design migration paths and rollbacks with Prisma or Planetscale workflows.',
-            'Instrument query performance, slow logs, and backup rotation for production readiness.',
+            'Best for: E-commerce, membership systems, and transactional back-office platforms. Recommended site: mysql.com.',
+            'Team example: Maintained by the Oracle MySQL team and widely used by teams behind products like YouTube and Shopify.',
+            'Advantages: Mature tooling, stable performance, and broad hosting/support compatibility.',
           ],
         },
         {
@@ -504,9 +490,9 @@ const dictionaries: Record<Locale, Dictionary> = {
           description:
             'Harness Postgres extensions to support mixed analytical and transactional workloads without extra services.',
           points: [
-            'Model reporting needs with materialized views, CTEs, and window functions.',
-            'Store semi-structured payloads with JSONB and GIN indexes for fast lookup.',
-            'Stream changes through logical replication to feed downstream systems.',
+            'Best for: Data-rich products, analytics dashboards, and systems needing complex queries. Recommended site: postgresql.org.',
+            'Team example: Developed by the PostgreSQL Global Development Group and used by product teams such as Instagram.',
+            'Advantages: Powerful SQL features, strong data integrity, and flexible JSONB/extension support.',
           ],
         },
       ],
@@ -517,29 +503,22 @@ const dictionaries: Record<Locale, Dictionary> = {
       description:
         'Share your roadmap, brief, or even a napkin sketch. I can help map the path, shape the story, and assemble a delivery-ready UI system.',
       primaryCta: 'Send an email',
-      secondaryCta: 'Book a call',
       contacts: [
         {
           id: 'email',
           label: 'Email',
-          value: 'liuniipu@gmail.com',
-          href: 'mailto:liuniipu@gmail.com?subject=Project%20Collaboration',
-        },
-        {
-          id: 'linkedin',
-          label: 'LinkedIn',
-          value: 'linkedin.com/in/liuniipu',
-          href: 'https://www.linkedin.com/in/liuniipu',
+          value: 'chuanren54.gmail.com',
+          href: 'mailto:chuanren54.gmail.com?subject=Project%20Collaboration',
         },
       ],
     },
     footer: {
-      copy: 'liuniipu. All rights reserved.',
+      copy: 'HY. All rights reserved.',
     },
   },
   zh: {
     navigation: {
-      brand: 'liuniipu',
+      brand: 'HY',
       items: [
         { label: '首頁', href: '#home' },
         { label: '案例', href: '/zh/examples' },
@@ -547,10 +526,10 @@ const dictionaries: Record<Locale, Dictionary> = {
           label: '立即試用',
           children: [
             { label: '總覽', href: '/zh/try-now' },
-            { label: 'Market', href: '/zh/try-now/market' },
-            { label: 'Intro', href: '/zh/try-now/intro' },
-            { label: 'Modular', href: '/zh/try-now/modular' },
-            { label: 'App', href: '/zh/try-now/app' },
+            { label: '購物車', href: '/zh/try-now/market' },
+            { label: '開場頁', href: '/zh/try-now/intro' },
+            { label: '模組展示', href: '/zh/try-now/modular' },
+            { label: '聊天室', href: '/zh/try-now/app' },
           ],
         },
         { label: '技術語系', href: '/zh/language' },
@@ -566,44 +545,62 @@ const dictionaries: Record<Locale, Dictionary> = {
       slides: [
         {
           id: 'experience',
-          label: '體驗設計',
-          title: '打造沈穩且緊密連結的網頁旅程。',
+          label: '案例重點',
+          title: '四種專案方向，聚焦不同需求落地。',
           description:
-            '以細膩的敘事搭配恰到好處的動態，引導使用者而不造成干擾。每個互動都為清晰、專注與效能而調校。',
+            '從社交平台、資源管理後台，到形象網站與手機 App，每個案例都對應清楚的目標與使用情境。',
           bullets: [
-            '無障礙優先的介面模式',
-            '解釋複雜流程的微互動',
-            '兼顧效能預算的響應式應用',
+            '社交平台：兼顧隱私設定與高互動交流。',
+            '資源管理後台：把跨單位流程轉成直觀操作。',
+            '形象網站與手機 App：兼具亮點敘事與地圖導航實用性。',
           ],
         },
         {
           id: 'collaboration',
-          label: '產品協作',
-          title: '與產品與行銷團隊攜手塑造想法。',
+          label: '技術實作',
+          title: '以實用技術組合，支撐穩定交付。',
           description:
-            '串聯利害關係人的語言，將品牌策略轉化成可延展的設計系統與可上線的元件。',
+            '前端以 React/Next.js 與 Vue/Nuxt 彈性搭配，後端資料以 MySQL、PostgreSQL 建立穩定且可擴展的基礎。',
           bullets: [
-            'Figma 到產線元件的流水線',
-            '可跨框架延伸的設計語彙',
-            '高速原型驗證概念可行性',
+            'React + Next.js：利於 SEO 與可維護的元件化開發。',
+            'Vue + Nuxt：快速建置內容型與活動型網站。',
+            'MySQL/PostgreSQL：兼顧交易穩定與分析查詢能力。',
           ],
         },
         {
           id: 'delivery',
-          label: '交付與成長',
-          title: '從原型走到可正式發布的體驗。',
+          label: '試用導覽',
+          title: '從試用模組快速看見想法的實際樣貌。',
           description:
-            '主導前端發佈路線，嚴密控管品保，並把洞察轉成循環迭代的改善節奏。',
+            '提供購物流程、開場展示、模組展示與聊天室示範，協助在開發前快速驗證流程與介面方向。',
           bullets: [
-            '友善回歸測試的 UI 架構',
-            '提供利害關係人的 CSAT 與 UX 儀表板',
-            '搭配 A/B 追蹤的漸進式釋出',
+            '先體驗互動，再細化開發需求。',
+            '一次比較不同功能模組的呈現方式。',
+            '加速提案、溝通與實作的對齊效率。',
+          ],
+        },
+        {
+          id: 'contact',
+          label: '聯絡合作',
+          title: '歡迎聯絡，讓藍圖與專案目標快速對齊。',
+          description:
+            '提供需求方向、時程與目標後，可快速釐清範圍並規劃執行步驟，從想法走向可交付成果。',
+          bullets: [
+            '透過電子郵件啟動合作討論。',
+            '快速對齊優先順序與里程碑。',
+            '把想法整理成可執行的開發藍圖。',
           ],
         },
       ],
       ctas: {
         explore: '查看案例',
         start: '開始合作',
+        exploreBySlide: {
+          experience: '查看案例重點',
+          collaboration: '查看技術組合',
+          delivery: '查看試用模組',
+          contact: '立即聯絡',
+        },
       },
       card: {
         indicatorTemplate: '幻燈片 {current}/{total}',
@@ -619,67 +616,62 @@ const dictionaries: Record<Locale, Dictionary> = {
       stats: [
         {
           value: '50+',
-          description: '跨品牌與產品團隊完成的網頁交付成果。',
+          description: '運用安心可靠的套件',
         },
         {
           value: '4-6 週',
-          description: '從設計到上線平均時程，動態與 QA 從第一天就納入。',
+          description: '從框線圖、MVP 到 QA',
         },
         {
           value: '90%+',
-          description: '透過研究洞察與元件系統達成的使用性測試成功率。',
+          description: '首次提交通過率',
         },
       ],
     },
     examples: {
       heading: '案例精選',
-      description:
-        '從數據儀表板、敘事導覽頁到行動應用的代表作品，聚焦可衡量的成果。',
+      description: '多方位的編碼經驗，運用於各式專案',
       tryNowCta: '\u7acb\u5373\u8a66\u7528',
       exploreMoreCta: '\u9032\u4e00\u6b65\u700f\u89bd\u6848\u4f8b\u5eab',
       projects: [
         {
           id: 'market',
-          title: 'Market Pulse Dashboard',
+          title: '購物車互動體驗',
           description:
             '即時呈現多市場庫存、警示與價格動態的分析工作站，支援交易團隊決策。',
           highlights: [
-            '角色：UI 架構與動態設計',
-            '技術：Next.js、Tailwind、D3',
-            '成果：洞察時間縮短 22%',
+            '適用場景：電商、自營商城',
+            '解說：利用簡潔的介面拉近用戶體驗',
           ],
         },
         {
           id: 'intro',
-          title: 'Narrative Intro Microsite',
+          title: '敘事式開場頁',
           description:
             '以章節堆疊、主視覺動畫與可在地化內容打造的新產品敘事式官網。',
           highlights: [
-            '角色：創意指導與前端開發',
-            '技術：React、Framer Motion',
-            '成果：互動率為靜態新聞稿的 3 倍',
+            '適用場景：品牌官網、新品發表頁',
+            '解說：透過滾動敘事與段落動態，強化產品故事的傳達力',
           ],
         },
         {
           id: 'modular',
-          title: 'Modular Package Showcase',
+          title: '模組化功能展示',
           description:
-            'Configurable module catalog that spotlights plug-and-play bundles with live previews, usage recipes, and documentation callouts.',
+            '可配置的模組目錄，透過即時預覽與操作流程說明，快速展示可插拔式功能組合。',
           highlights: [
-            'Role: Product Marketing Engineering',
-            'Stack: Next.js, MDX, Radix UI',
-            'Outcome: 30% lift in module activation rate',
+            '適用場景：後台系統、模組化平台',
+            '解說：以拖曳配置方式，讓使用者快速理解功能組合與成效差異',
           ],
         },
         {
           id: 'app',
-          title: 'Mobile Companion App',
+          title: '聊天室互動示範',
           description:
             '為外勤夥伴打造的混合式 App，提供離線清單、QR 流程與隨手同步的儀表板。',
           highlights: [
-            '角色：設計系統與開發',
-            '技術：React Native、Zustand',
-            '成果：週報提交時間加快 40%',
+            '適用場景：客服入口、常見問題導引',
+            '解說：使用預設訊息與逐字回覆，降低溝通門檻並提升互動感',
           ],
         },
       ],
@@ -687,62 +679,48 @@ const dictionaries: Record<Locale, Dictionary> = {
     examplesPage: {
       hero: {
         eyebrow: '案例資料庫',
-        title: '一個衝刺就能套用的示例。',
-        description: '這些模擬品牌示範同一套設計系統如何在不同市場與媒介自由轉換。',
+        title: '快速上線的合作案例',
+        description: '經過淬鍊、打磨後的成果',
         ctaLabel: '啟動專案',
         ctaHref: '/zh/contact',
       },
       brands: {
-        heading: '模擬品牌一覽',
-        description: '每個概念聚焦不同旅程，同時沿用相同的元件基底。',
+        heading: '案例一覽',
+        description: '不同專案中專注不同重點',
         items: [
           {
-            id: 'aurora-exchange',
-            name: 'Aurora Exchange',
-            sector: '金融科技 SaaS',
-            headline: '協助全球交易團隊維持清晰',
-            description: '跨市場警示、流動性洞察與法遵輸出，以沈穩的數據介面呈現。',
+            id: 'social-platform',
+            name: '社交平台',
+            sector: '社交平台',
+            headline: '從資料表規劃、串接資料至前端展示',
+            description: '提供各項熱門功能，兼顧隱密性、交流性。',
           },
-        {
-            id: 'pulse-ledger',
-            name: 'Pulse Ledger',
-            sector: '金流平台',
-            headline: '擺脫試算表的營收洞察',
-            description: '主管總覽結合 KPI 敘事與鑽取帳務視圖，讓財務團隊快速規劃。',
+          {
+            id: 'resource-admin',
+            name: '資源管理後台',
+            sector: '資源管理後台',
+            headline: '了解各單位流程及資源，規劃且撰寫邏輯',
+            description: '直觀、簡易的操作介面，快速掌握單位現況。',
           },
-        {
-            id: 'nova-health',
-            name: 'NovaHealth Loop',
-            sector: '數位醫療',
-            headline: '跨專科照護秒對齊',
-            description: '模組化看診時序揭露檢傷決策、追蹤任務與病患目標。',
+          {
+            id: 'branding-site',
+            name: '形象網頁',
+            sector: '形象網頁',
+            headline: '整理優勢，製作具互動且吸睛的頁面',
+            description: '快速、有效的展示賣點。',
           },
-        {
-            id: 'linea-stories',
-            name: 'Linea Stories',
-            sector: '媒體出版',
-            headline: '以動態敘事開場的故事頁',
-            description: '互動章節融合字體、影片與環境聲效開關，支援編輯團隊發佈。',
-          },
-        {
-            id: 'orbit-mobility',
-            name: 'Orbit Mobility',
-            sector: '移動服務市集',
-            headline: '以城市節奏建立乘客信任',
-            description: '動態票價防護、熱區控管與客服巨集讓營運團隊搶先需求。',
-          },
-        {
-            id: 'kindred-markets',
-            name: 'Kindred Markets',
-            sector: '社群電商',
-            headline: '保留溫度的商店中商店',
-            description: '個人化精選、會員層級與即時客服交接，把街區氛圍搬上線。',
+          {
+            id: 'mobile-app',
+            name: '手機 APP',
+            sector: '手機 APP',
+            headline: 'App 規劃與製作',
+            description: '串接地圖，提供自訂地點與快速導航。',
           },
         ],
       },
       categories: {
-        heading: '無限延伸的網頁樣式',
-        label: '從原型到上線旅程：',
+        heading: '樂此不疲的開發旅程',
+        label: '各個想法從腦海一一實現',
         items: [
           '市場儀表板',
           '行動夥伴 App',
@@ -755,29 +733,22 @@ const dictionaries: Record<Locale, Dictionary> = {
         ],
       },
       testimonials: {
-        heading: 'PM 視角',
-        description: '合作過的產品經理分享這些示例如何加速對齊。',
+        heading: '夥伴推薦',
+        description: '合作過程中，不經意的讚嘆',
         items: [
           {
-            id: 'northbeam-pm',
-            quote: '這些模擬交付讓我和利害關係人溝通範疇變得輕鬆，一次評審就像準備好簡報。',
-            author: 'Elaine Chou',
-            role: '產品經理',
-            company: 'Northbeam Logistics',
+            id: 'pm-collab',
+            quote: '好溝通的工程師，願意嘗試各種可能與分析。',
+            author: '合作經理',
+            role: 'PM',
+            company: '合作經理',
           },
-        {
-            id: 'orbit-pm',
-            quote: '共用設計 token 讓行動與網頁小組一起構想，不拖慢工程就交付一致故事。',
-            author: 'Miguel Rivera',
-            role: '資深產品經理',
-            company: 'Orbit Mobility',
-          },
-        {
-            id: 'storyforge-pm',
-            quote: '連品牌團隊都能沿著動態系統延伸，看見不同模擬品牌激發更快的內容決策。',
-            author: 'Priya Desai',
-            role: '產品負責人',
-            company: 'Storyforge Media',
+          {
+            id: 'pm-delivery',
+            quote: '準時交件，能深度討論且找出癥結點。',
+            author: '產品經理',
+            role: 'PM',
+            company: '產品經理',
           },
         ],
       },
@@ -835,9 +806,9 @@ const dictionaries: Record<Locale, Dictionary> = {
           focus: '核心產品前台',
           description: '善用 App Router 的規範來平衡動態產品頁與可預測的建置流程。',
           points: [
-            '透過 Server / Client Components 與 Suspense 維持互動順暢。',
-            '結合 Server Actions、Route Handlers 與邊緣快取策略規劃資料流。',
-            '以 Storybook-ready 的 UI 元件與 Tailwind token 統一設計語彙。',
+            '適用平台：品牌官網、SaaS 後台、內容型網站。',
+            '團隊案例：由 Meta（Facebook）工程團隊開發，並用於 Facebook、Instagram 等產品。',
+            '優點：生態完整、元件復用性高，搭配 Next.js 具備良好 SEO 與 SSR 效能。',
           ],
         },
         {
@@ -846,9 +817,9 @@ const dictionaries: Record<Locale, Dictionary> = {
           focus: '多團隊體驗對齊',
           description: '以 Nuxt 3 打造與 React 相仿的能力，讓行銷與產品團隊保持一致。',
           points: [
-            '運用檔案式路由、版型與 middleware 快速推出活動頁。',
-            '以 Composition API 與 Pinia store 封裝複雜狀態。',
-            '結合 Nuxt Content 與伺服器路由製作靜態與混合佈署。',
+            '適用平台：內容網站、活動頁、企業形象站。',
+            '團隊案例：由 Nuxt Labs 與 Vue 生態核心團隊推動，GitLab 等團隊採用 Vue 技術開發前端。',
+            '優點：檔案結構清楚、上手快，並具備完整的 SSR 與靜態產生能力。',
           ],
         },
         {
@@ -857,9 +828,9 @@ const dictionaries: Record<Locale, Dictionary> = {
           focus: '營運型資料庫',
           description: '以結構化設計支撐交易工作負載，兼顧清晰與擴充性。',
           points: [
-            '依領域模型進行正規化、外鍵與讀取導向索引配置。',
-            '透過 Prisma 或 Planetscale pipeline 管理版本遷移與回滾。',
-            '監控查詢效能、慢查記錄與備份輪替，確保正式環境安全。',
+            '適用平台：電商平台、會員系統、交易型後台。推薦網站：mysql.com',
+            '團隊案例：由 Oracle MySQL 團隊維護，YouTube、Shopify 等產品團隊長期採用。',
+            '優點：工具成熟、穩定性高，且主機商與雲端服務支援廣泛。',
           ],
         },
         {
@@ -868,9 +839,9 @@ const dictionaries: Record<Locale, Dictionary> = {
           focus: '分析彈性',
           description: '運用 Postgres 擴充功能，兼顧分析與交易需求，避免額外服務。',
           points: [
-            '以實體化檢視、CTE 與視窗函式滿足報表需求。',
-            '運用 JSONB 與 GIN 索引儲存半結構化資料並維持查詢速度。',
-            '藉由邏輯複寫串接變更資料，提供下游系統即時更新。',
+            '適用平台：資料密集產品、分析儀表板、需複雜查詢的系統。推薦網站：postgresql.org',
+            '團隊案例：由 PostgreSQL Global Development Group 開發維護，Instagram 等產品團隊使用。',
+            '優點：SQL 功能強大、資料一致性佳，並支援 JSONB 與多種擴充套件。',
           ],
         },
       ],
@@ -878,27 +849,19 @@ const dictionaries: Record<Locale, Dictionary> = {
     contact: {
       badge: '聯絡',
       heading: '想開始就現在。',
-      description:
-        '無論是 roadmap、簡報或一張手稿，我都能協助勾勒路徑、形塑故事並打造可正式上線的 UI 系統。',
+      description: '歡迎聯絡洽詢進一步合作，構築藍圖，完成專案。',
       primaryCta: '寫信給我',
-      secondaryCta: '預約通話',
       contacts: [
         {
           id: 'email',
           label: '電子郵件',
-          value: 'liuniipu@gmail.com',
-          href: 'mailto:liuniipu@gmail.com?subject=Project%20Collaboration',
-        },
-        {
-          id: 'linkedin',
-          label: 'LinkedIn',
-          value: 'linkedin.com/in/liuniipu',
-          href: 'https://www.linkedin.com/in/liuniipu',
+          value: 'chuanren54.gmail.com',
+          href: 'mailto:chuanren54.gmail.com?subject=Project%20Collaboration',
         },
       ],
     },
     footer: {
-      copy: 'liuniipu。保留所有權利。',
+      copy: 'HY 保留所有權利。',
     },
   },
 };

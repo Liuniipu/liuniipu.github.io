@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Locale } from '../../lib/homeContent';
 
@@ -38,7 +38,9 @@ type Copy = {
   displayDescription: string;
   noSelection: string;
   chartTitle: string;
+  overlayLabel: string;
   selectedCount: string;
+  hoverHint: string;
 };
 
 const MODULE_TEMPLATES: readonly ModuleTemplate[] = [
@@ -109,7 +111,9 @@ const copy: Record<Locale, Copy> = {
     displayDescription: 'Simulated results update as modules are assigned.',
     noSelection: 'No modules added yet. Drag warehouse, cost, or HR management into the usage area.',
     chartTitle: 'Simulated performance',
+    overlayLabel: 'Overlay',
     selectedCount: 'Selected modules',
+    hoverHint: 'Hover for 2s to view details.',
   },
   zh: {
     heading: '\u6a21\u7d44\u5316\u6d41\u7a0b\u914d\u7f6e\u5c55\u793a',
@@ -127,7 +131,9 @@ const copy: Record<Locale, Copy> = {
     displayDescription: '\u65b0\u589e\u6216\u66ff\u63db\u6a21\u7d44\u5f8c\uff0c\u6703\u540c\u6b65\u66f4\u65b0\u6a21\u64ec\u7d50\u679c\u3002',
     noSelection: '\u5c1a\u672a\u65b0\u589e\u4efb\u4f55\u6a21\u7d44\u3002\u8acb\u5c07\u5009\u5eab\u7ba1\u7406\u3001\u6210\u672c\u7ba1\u7406\u6216\u4eba\u4e8b\u7ba1\u7406\u62d6\u66f3\u5230\u4f7f\u7528\u5340\u584a\u3002',
     chartTitle: '\u6a21\u64ec\u6210\u6548\u8da8\u52e2',
+    overlayLabel: '\u758a\u52a0\u6bd4\u8f03',
     selectedCount: '\u5df2\u9078\u6a21\u7d44',
+    hoverHint: '\u6ed1\u9f20\u61f8\u505c 2 \u79d2\u986f\u793a\u63d0\u793a\u6587\u5b57\u3002',
   },
 };
 
@@ -135,48 +141,30 @@ function getText(locale: Locale, value: LocalizedText) {
   return value[locale] ?? value.en;
 }
 
-function BarChart({ labels, values, color }: { labels: readonly string[]; values: readonly number[]; color: string }) {
-  const max = Math.max(...values, 1);
+type SelectedModule = {
+  slotIndex: number;
+  moduleItem: ModuleTemplate;
+};
 
-  return (
-    <div className="space-y-3">
-      <div className="flex h-36 items-end gap-2 rounded-xl border border-slate-800/70 bg-slate-950/40 p-3">
-        {values.map((value, index) => {
-          const height = Math.max(12, Math.round((value / max) * 100));
-          return (
-            <div key={`${labels[index]}-${value}`} className="flex min-w-0 flex-1 flex-col items-center justify-end gap-2">
-              <span className="text-[10px] font-semibold text-slate-400">{value}</span>
-              <div className="w-full rounded-md" style={{ height: `${height}%`, backgroundColor: color }} />
-            </div>
-          );
-        })}
-      </div>
-      <div className="grid grid-cols-4 gap-2 text-[11px] text-slate-400 sm:grid-cols-6">
-        {labels.map((label) => (
-          <span key={label} className="truncate">
-            {label}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function LineChart({ labels, values, color }: { labels: readonly string[]; values: readonly number[]; color: string }) {
+function OverlayChart({ modules }: { modules: readonly SelectedModule[] }) {
   const width = 320;
   const height = 150;
   const padding = 14;
-  const max = Math.max(...values, 1);
-  const min = Math.min(...values, 0);
+  const allValues = modules.flatMap(({ moduleItem }) => moduleItem.chartValues);
+  const max = Math.max(...allValues, 1);
+  const min = Math.min(...allValues, 0);
   const range = Math.max(max - min, 1);
-
-  const points = values
-    .map((value, index) => {
-      const x = padding + (index * (width - padding * 2)) / Math.max(values.length - 1, 1);
-      const y = height - padding - ((value - min) / range) * (height - padding * 2);
-      return `${x},${y}`;
-    })
-    .join(' ');
+  const maxPoints = Math.max(...modules.map(({ moduleItem }) => moduleItem.chartValues.length), 1);
+  const longestModule = modules.reduce((acc, item) => {
+    if (!acc || item.moduleItem.chartLabels.length > acc.moduleItem.chartLabels.length) {
+      return item;
+    }
+    return acc;
+  }, modules[0]);
+  const axisLabels =
+    longestModule?.moduleItem.chartLabels.length === maxPoints
+      ? longestModule.moduleItem.chartLabels
+      : Array.from({ length: maxPoints }, (_, index) => `P${index + 1}`);
 
   return (
     <div className="space-y-3">
@@ -193,23 +181,45 @@ function LineChart({ labels, values, color }: { labels: readonly string[]; value
               strokeWidth="1"
             />
           ))}
-          <polyline fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" points={points} />
-          {values.map((value, index) => {
-            const x = padding + (index * (width - padding * 2)) / Math.max(values.length - 1, 1);
-            const y = height - padding - ((value - min) / range) * (height - padding * 2);
+          {modules.map(({ slotIndex, moduleItem }) => {
+            const points = moduleItem.chartValues
+              .map((value, index) => {
+                const x = padding + (index * (width - padding * 2)) / Math.max(moduleItem.chartValues.length - 1, 1);
+                const y = height - padding - ((value - min) / range) * (height - padding * 2);
+                return `${x},${y}`;
+              })
+              .join(' ');
+
             return (
-              <g key={`${labels[index]}-${value}`}>
-                <circle cx={x} cy={y} r="3.5" fill={color} />
-                <text x={x} y={y - 8} fill="rgba(226,232,240,0.85)" fontSize="10" textAnchor="middle">
-                  {value}
-                </text>
+              <g key={`overlay-line-${slotIndex}-${moduleItem.id}`}>
+                <polyline
+                  fill="none"
+                  stroke={moduleItem.chartColor}
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  points={points}
+                />
+                {moduleItem.chartValues.map((value, index) => {
+                  const x = padding + (index * (width - padding * 2)) / Math.max(moduleItem.chartValues.length - 1, 1);
+                  const y = height - padding - ((value - min) / range) * (height - padding * 2);
+                  return (
+                    <circle
+                      key={`overlay-point-${slotIndex}-${moduleItem.id}-${index}`}
+                      cx={x}
+                      cy={y}
+                      r="3.2"
+                      fill={moduleItem.chartColor}
+                    />
+                  );
+                })}
               </g>
             );
           })}
         </svg>
       </div>
       <div className="grid grid-cols-4 gap-2 text-[11px] text-slate-400 sm:grid-cols-6">
-        {labels.map((label) => (
+        {axisLabels.map((label) => (
           <span key={label} className="truncate">
             {label}
           </span>
@@ -219,17 +229,11 @@ function LineChart({ labels, values, color }: { labels: readonly string[]; value
   );
 }
 
-function ChartPreview({ module }: { module: ModuleTemplate }) {
-  if (module.chartType === 'bar') {
-    return <BarChart labels={module.chartLabels} values={module.chartValues} color={module.chartColor} />;
-  }
-
-  return <LineChart labels={module.chartLabels} values={module.chartValues} color={module.chartColor} />;
-}
-
 export function ModularShowcase({ locale }: { locale: Locale }) {
   const [slots, setSlots] = useState<Array<ModuleId | null>>([null, null, null]);
   const [draggingId, setDraggingId] = useState<ModuleId | null>(null);
+  const [visibleTooltipKey, setVisibleTooltipKey] = useState<string | null>(null);
+  const hoverTimers = useRef<Record<string, number>>({});
   const text = copy[locale] ?? copy.en;
 
   const moduleMap = useMemo(
@@ -238,8 +242,8 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
   );
 
   const selectedModules = slots
-    .map((id, index) => (id ? { slotIndex: index, module: moduleMap[id] } : null))
-    .filter((item): item is { slotIndex: number; module: ModuleTemplate } => item !== null);
+    .map((id, index) => (id ? { slotIndex: index, moduleItem: moduleMap[id] } : null))
+    .filter((item): item is SelectedModule => item !== null);
 
   const handleDropToSlot = (slotIndex: number, moduleId: ModuleId) => {
     setSlots((previous) => {
@@ -259,6 +263,30 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
     setSlots((previous) => previous.map((id, index) => (index === slotIndex ? null : id)));
   };
 
+  const handleHoverStart = (key: string) => {
+    if (hoverTimers.current[key]) {
+      window.clearTimeout(hoverTimers.current[key]);
+    }
+    hoverTimers.current[key] = window.setTimeout(() => {
+      setVisibleTooltipKey(key);
+    }, 2000);
+  };
+
+  const handleHoverEnd = (key: string) => {
+    if (hoverTimers.current[key]) {
+      window.clearTimeout(hoverTimers.current[key]);
+      delete hoverTimers.current[key];
+    }
+    setVisibleTooltipKey((current) => (current === key ? null : current));
+  };
+
+  useEffect(
+    () => () => {
+      Object.values(hoverTimers.current).forEach((timer) => window.clearTimeout(timer));
+    },
+    [],
+  );
+
   return (
     <section className="rounded-3xl border border-slate-800/60 bg-slate-950/50 p-6 sm:p-10">
       <div className="space-y-8">
@@ -267,18 +295,25 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
           <h2 className="text-2xl font-semibold text-slate-50 sm:text-3xl">{text.description}</h2>
         </header>
 
-        <div className="grid gap-6 xl:grid-cols-[1.05fr_1.3fr]">
-          <div className="space-y-6">
-            <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
-              <div className="mb-4 space-y-2">
+        <div className="space-y-6">
+          <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+            <div className="mb-4 grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-slate-100">{text.libraryTitle}</h3>
                 <p className="text-sm text-slate-400">{text.libraryDescription}</p>
               </div>
+              <div className="space-y-2 md:text-right">
+                <h3 className="text-lg font-semibold text-slate-100">{text.usageTitle}</h3>
+                <p className="text-sm text-slate-400">{text.usageDescription}</p>
+              </div>
+            </div>
 
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-4">
                 {MODULE_TEMPLATES.map((module) => {
                   const assignedSlot = slots.findIndex((id) => id === module.id);
                   const isAssigned = assignedSlot >= 0;
+                  const tooltipKey = `module-${module.id}`;
 
                   return (
                     <div
@@ -290,13 +325,18 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
                         setDraggingId(module.id);
                       }}
                       onDragEnd={() => setDraggingId(null)}
-                      className={`cursor-grab rounded-2xl border p-4 transition active:cursor-grabbing ${
+                      onMouseEnter={() => handleHoverStart(tooltipKey)}
+                      onMouseLeave={() => handleHoverEnd(tooltipKey)}
+                      onFocus={() => handleHoverStart(tooltipKey)}
+                      onBlur={() => handleHoverEnd(tooltipKey)}
+                      className={`relative cursor-grab rounded-2xl border p-4 transition active:cursor-grabbing ${
                         draggingId === module.id
                           ? 'border-sky-400/70 bg-sky-500/10'
                           : isAssigned
                             ? 'border-emerald-500/30 bg-emerald-500/5'
                             : 'border-slate-800 bg-slate-950/70 hover:border-slate-700'
                       }`}
+                      tabIndex={0}
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 text-xl">
@@ -311,7 +351,6 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
                               </span>
                             ) : null}
                           </div>
-                          <p className="mt-1 text-sm text-slate-400">{getText(locale, module.summary)}</p>
                           <div className="mt-3 flex flex-wrap gap-2">
                             {module.tags.map((tag) => (
                               <span key={`${module.id}-${tag}`} className="rounded-full border border-slate-800 bg-slate-900/60 px-2.5 py-1 text-xs text-slate-400">
@@ -321,25 +360,24 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
                           </div>
                         </div>
                       </div>
+                      {visibleTooltipKey === tooltipKey ? (
+                        <div className="pointer-events-none absolute inset-x-4 -bottom-3 z-10 translate-y-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300 shadow-xl">
+                          {getText(locale, module.summary)}
+                        </div>
+                      ) : null}
                     </div>
                   );
                 })}
               </div>
-            </section>
-
-            <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
-              <div className="mb-4 space-y-2">
-                <h3 className="text-lg font-semibold text-slate-100">{text.usageTitle}</h3>
-                <p className="text-sm text-slate-400">{text.usageDescription}</p>
-              </div>
 
               <div className="grid gap-4">
                 {slots.map((moduleId, slotIndex) => {
-                  const module = moduleId ? moduleMap[moduleId] : null;
+                  const slotModule = moduleId ? moduleMap[moduleId] : null;
+                  const tooltipKey = `slot-${slotIndex}`;
 
                   return (
                     <div
-                      key={`slot-${slotIndex}`}
+                      key={tooltipKey}
                       onDragOver={(event) => {
                         event.preventDefault();
                         event.dataTransfer.dropEffect = 'move';
@@ -351,8 +389,10 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
                         handleDropToSlot(slotIndex, droppedId);
                         setDraggingId(null);
                       }}
-                      className={`rounded-2xl border p-4 transition ${
-                        module
+                      onMouseEnter={() => handleHoverStart(tooltipKey)}
+                      onMouseLeave={() => handleHoverEnd(tooltipKey)}
+                      className={`relative rounded-2xl border p-4 transition ${
+                        slotModule
                           ? 'border-sky-400/30 bg-slate-900/40'
                           : 'border-dashed border-slate-700 bg-slate-950/40'
                       }`}
@@ -366,17 +406,14 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
                             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
                               {text.slotLabel} {slotIndex + 1}
                             </p>
-                            {module ? (
-                              <>
-                                <p className="mt-1 text-sm font-semibold text-slate-100">{getText(locale, module.title)}</p>
-                                <p className="mt-1 text-sm text-slate-400">{getText(locale, module.summary)}</p>
-                              </>
+                            {slotModule ? (
+                              <p className="mt-1 text-sm font-semibold text-slate-100">{getText(locale, slotModule.title)}</p>
                             ) : (
                               <p className="mt-1 text-sm text-slate-500">{text.slotEmpty}</p>
                             )}
                           </div>
                         </div>
-                        {module ? (
+                        {slotModule ? (
                           <button
                             type="button"
                             onClick={() => handleRemoveSlot(slotIndex)}
@@ -386,14 +423,23 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
                           </button>
                         ) : null}
                       </div>
+
+                      {slotModule && visibleTooltipKey === tooltipKey ? (
+                        <div className="pointer-events-none absolute inset-x-4 -bottom-3 z-10 translate-y-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300 shadow-xl">
+                          {getText(locale, slotModule.summary)}
+                        </div>
+                      ) : null}
                     </div>
                   );
                 })}
               </div>
+            </div>
 
-              <p className="mt-4 text-xs text-slate-500">{text.dropHint}</p>
-            </section>
-          </div>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+              <p>{text.dropHint}</p>
+              <p>{text.hoverHint}</p>
+            </div>
+          </section>
 
           <aside className="rounded-3xl border border-slate-800 bg-slate-950/40 p-6">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -412,34 +458,51 @@ export function ModularShowcase({ locale }: { locale: Locale }) {
               </div>
             ) : (
               <div className="space-y-5">
-                {selectedModules.map(({ slotIndex, module }) => (
-                  <section key={`preview-${slotIndex}-${module.id}`} className="rounded-2xl border border-slate-800 bg-slate-950/65 p-5">
-                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
-                          {text.slotLabel} {slotIndex + 1}
-                        </p>
-                        <div className="mt-1 flex items-center gap-2">
-                          <span className="text-lg" aria-hidden="true">{module.icon}</span>
-                          <h4 className="text-base font-semibold text-slate-100">{getText(locale, module.title)}</h4>
-                        </div>
-                      </div>
-                      <div className="rounded-xl border border-slate-800 bg-slate-900/60 px-3 py-2 text-right">
-                        <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">{getText(locale, module.effectLabel)}</p>
-                        <p className="text-sm font-semibold" style={{ color: module.chartColor }}>
-                          {getText(locale, module.effectValue)}
-                        </p>
-                      </div>
-                    </div>
+                <section className="rounded-2xl border border-slate-800 bg-slate-950/65 p-5">
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-sm font-semibold text-slate-200">{text.chartTitle}</p>
+                    <span className="text-xs text-slate-500">{text.overlayLabel}</span>
+                  </div>
 
-                    <div className="mb-3 flex items-center justify-between">
-                      <p className="text-sm font-semibold text-slate-200">{text.chartTitle}</p>
-                      <span className="text-xs text-slate-500">{module.chartType === 'bar' ? 'Bar' : 'Line'}</span>
-                    </div>
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {selectedModules.map(({ slotIndex, moduleItem }) => (
+                      <span
+                        key={`legend-${slotIndex}-${moduleItem.id}`}
+                        className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1 text-xs text-slate-200"
+                      >
+                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: moduleItem.chartColor }} />
+                        <span>
+                          {text.slotLabel} {slotIndex + 1} - {getText(locale, moduleItem.title)}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
 
-                    <ChartPreview module={module} />
-                  </section>
-                ))}
+                  <OverlayChart modules={selectedModules} />
+                </section>
+
+                <div className="grid gap-3 md:grid-cols-3">
+                  {selectedModules.map(({ slotIndex, moduleItem }) => (
+                    <section
+                      key={`metric-${slotIndex}-${moduleItem.id}`}
+                      className="rounded-xl border border-slate-800 bg-slate-950/65 p-4"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                        {text.slotLabel} {slotIndex + 1}
+                      </p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <span className="text-lg" aria-hidden="true">{moduleItem.icon}</span>
+                        <h4 className="text-sm font-semibold text-slate-100">{getText(locale, moduleItem.title)}</h4>
+                      </div>
+                      <p className="mt-3 text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                        {getText(locale, moduleItem.effectLabel)}
+                      </p>
+                      <p className="text-sm font-semibold" style={{ color: moduleItem.chartColor }}>
+                        {getText(locale, moduleItem.effectValue)}
+                      </p>
+                    </section>
+                  ))}
+                </div>
               </div>
             )}
           </aside>

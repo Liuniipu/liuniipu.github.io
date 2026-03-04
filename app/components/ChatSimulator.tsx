@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type React from 'react';
+
 import type { Locale } from '../../lib/homeContent';
 
 type ChatSimulatorProps = {
@@ -14,29 +14,95 @@ type ChatMessage = {
   content: string;
 };
 
+type QuickMessage = {
+  id: string;
+  label: string;
+  reply: string;
+};
+
 type Copy = {
   heading: string;
   subheading: string;
-  inputPlaceholder: string;
-  send: string;
   typing: string;
+  optionsTitle: string;
+  notesTitle: string;
+  notes: string[];
 };
 
 const copyMap: Record<Locale, Copy> = {
   en: {
     heading: 'Simulated chat panel',
-    subheading: 'Test a simple chat flow with mock assistant replies.',
-    inputPlaceholder: 'Type a message…',
-    send: 'Send',
-    typing: 'Assistant is typing…',
+    subheading: 'Click a preset message to preview fixed chatbot responses.',
+    typing: 'Assistant is typing...',
+    optionsTitle: 'Message options',
+    notesTitle: 'Notes',
+    notes: [
+      'Preset-message simulation without network requests.',
+      'Click any option to send instantly.',
+      'Useful for UI and flow demos.',
+    ],
   },
   zh: {
-    heading: '模擬聊天室',
-    subheading: '用簡單對話流程體驗模擬助理回覆。',
-    inputPlaceholder: '輸入訊息…',
-    send: '送出',
-    typing: '助理正在輸入…',
+    heading: '聊天室模擬',
+    subheading: '點擊預設訊息，展示固定回覆流程。',
+    typing: '正在輸入...',
+    optionsTitle: '訊息選擇',
+    notesTitle: '說明',
+    notes: [
+      '前端模擬，不連線後端服務。',
+      '點擊選項即可送出訊息。',
+      '展示互動流程與介面樣式。',
+    ],
   },
+};
+
+const quickMessageMap: Record<Locale, readonly QuickMessage[]> = {
+  en: [
+    {
+      id: 'hello',
+      label: 'Hello!',
+      reply: 'Hello! I am HY. Welcome to my website!',
+    },
+    {
+      id: 'mail',
+      label: 'I want to send an email!',
+      reply: 'My email is chuanren54.gmail.com',
+    },
+    {
+      id: 'experience',
+      label: 'What web projects have you built?',
+      reply:
+        'I have built different website types, including social platforms, e-commerce sites, and management systems. Features include chatrooms, shopping carts, forms, QRCode, and more.',
+    },
+    {
+      id: 'bye',
+      label: 'Goodbye!',
+      reply: 'Goodbye, and you are always welcome back!',
+    },
+  ],
+  zh: [
+    {
+      id: 'hello',
+      label: '你好!',
+      reply: '您好!我是HY，歡迎來到我的網站!',
+    },
+    {
+      id: 'mail',
+      label: '我想寄信!',
+      reply: '我的信箱是chuanren54.gmail.com',
+    },
+    {
+      id: 'experience',
+      label: '網頁製作經驗為何?',
+      reply:
+        '製作過不同類網站，例如：社群、購物、管理，其中功能包含但不限於聊天室、購物車、表單、QRCode，也樂於挑戰開發新功能',
+    },
+    {
+      id: 'bye',
+      label: '再會!',
+      reply: '再見，歡迎再來!',
+    },
+  ],
 };
 
 function makeId() {
@@ -45,62 +111,98 @@ function makeId() {
 
 export function ChatSimulator({ locale }: ChatSimulatorProps) {
   const copy = useMemo(() => copyMap[locale] ?? copyMap.en, [locale]);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: makeId(),
-      role: 'assistant',
-      content:
-        locale === 'zh'
-          ? '嗨！這裡是模擬聊天室，輸入訊息開始體驗。'
-          : 'Hi! This is a simulated chat. Type a message to start.',
-    },
-  ]);
-  const [input, setInput] = useState('');
+  const quickMessages = useMemo(() => quickMessageMap[locale] ?? quickMessageMap.en, [locale]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [pending, setPending] = useState(false);
+  const [typingProgress, setTypingProgress] = useState<Record<string, number>>({});
+  const [activeTypingId, setActiveTypingId] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const typingTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setMessages([
+      {
+        id: makeId(),
+        role: 'assistant',
+        content:
+          locale === 'zh'
+            ? '您好! 請從右側選擇一則訊息開始對話。'
+            : 'Hello! Please choose one message option to start.',
+      },
+    ]);
+    setTypingProgress({});
+    setActiveTypingId(null);
+  }, [locale]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages.length, pending]);
+  }, [messages.length, pending, typingProgress]);
 
-  const handleSend = () => {
-    const text = input.trim();
-    if (!text || pending) return;
-    const userMsg: ChatMessage = { id: makeId(), role: 'user', content: text };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput('');
+  useEffect(() => {
+    if (!activeTypingId) {
+      return undefined;
+    }
+
+    const targetMessage = messages.find((message) => message.id === activeTypingId);
+    if (!targetMessage) {
+      setActiveTypingId(null);
+      return undefined;
+    }
+
+    if (typingTimerRef.current) {
+      window.clearInterval(typingTimerRef.current);
+      typingTimerRef.current = null;
+    }
+
+    typingTimerRef.current = window.setInterval(() => {
+      setTypingProgress((previous) => {
+        const current = previous[activeTypingId] ?? 0;
+        const next = Math.min(targetMessage.content.length, current + 1);
+
+        if (next >= targetMessage.content.length) {
+          if (typingTimerRef.current) {
+            window.clearInterval(typingTimerRef.current);
+            typingTimerRef.current = null;
+          }
+          setActiveTypingId(null);
+        }
+
+        return { ...previous, [activeTypingId]: next };
+      });
+    }, 35);
+
+    return () => {
+      if (typingTimerRef.current) {
+        window.clearInterval(typingTimerRef.current);
+        typingTimerRef.current = null;
+      }
+    };
+  }, [activeTypingId, messages]);
+
+  useEffect(
+    () => () => {
+      if (typingTimerRef.current) {
+        window.clearInterval(typingTimerRef.current);
+      }
+    },
+    [],
+  );
+
+  const handleSelectMessage = (item: QuickMessage) => {
+    if (pending) {
+      return;
+    }
+
+    setMessages((prev) => [...prev, { id: makeId(), role: 'user', content: item.label }]);
     setPending(true);
 
-    // Simple mock assistant behavior
-    const reply = (() => {
-      const lower = text.toLowerCase();
-      const isZh = /[\u4e00-\u9fff]/.test(text);
-      if (isZh) {
-        if (text.includes('你好') || text.includes('嗨')) return '你好！有什麼我可以幫忙的？';
-        if (text.includes('幫') || text.includes('如何') || text.includes('怎麼'))
-          return '我可以示範：總結、產生想法、或製作待辦清單。你想試哪個？';
-        return `你說：「${text}」。要我幫你延伸這個想法嗎？`;
-      }
-      if (lower.includes('hello') || lower.includes('hi')) return 'Hello! How can I help today?';
-      if (lower.includes('help') || lower.includes('how'))
-        return 'I can demo summarizing, brainstorming, or making a todo list. Which one?';
-      return `You said: "${text}". Want me to build on that?`;
-    })();
-
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { id: makeId(), role: 'assistant', content: reply },
-      ]);
+    window.setTimeout(() => {
+      const assistantId = makeId();
+      setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', content: item.reply }]);
+      setTypingProgress((prev) => ({ ...prev, [assistantId]: 0 }));
+      setActiveTypingId(assistantId);
       setPending(false);
-    }, 700);
-  };
-
-  const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+    }, 600);
   };
 
   return (
@@ -111,8 +213,8 @@ export function ChatSimulator({ locale }: ChatSimulatorProps) {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[2fr,1fr]">
-        <div className="flex min-h-[320px] flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40">
-          <div className="flex-1 space-y-3 overflow-y-auto p-4">
+        <div className="flex h-[420px] min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40">
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
             {messages.map((m) => (
               <div
                 key={m.id}
@@ -122,61 +224,49 @@ export function ChatSimulator({ locale }: ChatSimulatorProps) {
                     : 'mr-auto max-w-[80%] rounded-2xl rounded-tl-md bg-slate-800/80 px-4 py-2 text-slate-100'
                 }
               >
-                {m.content}
+                {m.role === 'assistant' && typingProgress[m.id] !== undefined
+                  ? m.content.slice(0, typingProgress[m.id])
+                  : m.content}
               </div>
             ))}
-            {pending && (
+            {pending ? (
               <div className="mr-auto inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800/60 px-3 py-1 text-xs text-slate-300">
                 <span className="inline-block h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.2s]" />
                 <span className="inline-block h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400" />
                 <span className="inline-block h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:0.2s]" />
                 <span className="ml-2">{copy.typing}</span>
               </div>
-            )}
+            ) : null}
             <div ref={endRef} />
-          </div>
-          <div className="flex items-center gap-2 border-t border-slate-800 p-3">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={onKeyDown}
-              placeholder={copy.inputPlaceholder}
-              className="flex-1 rounded-xl border border-slate-700 bg-slate-900/60 px-3 py-2 text-slate-100 placeholder-slate-500 outline-none transition focus:border-sky-500/60"
-              aria-label={copy.inputPlaceholder}
-            />
-            <button
-              type="button"
-              onClick={handleSend}
-              disabled={pending || input.trim().length === 0}
-              className="inline-flex items-center justify-center rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition enabled:hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {copy.send}
-            </button>
           </div>
         </div>
 
-        <aside className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-300">
-          <p className="font-semibold text-slate-200">
-            {locale === 'zh' ? '說明' : 'Notes'}
-          </p>
-          <ul className="mt-2 list-disc space-y-1 pl-5">
-            <li>
-              {locale === 'zh'
-                ? '這是前端模擬，不會連線或儲存任何內容。'
-                : 'Frontend-only simulation — no network or storage.'}
-            </li>
-            <li>
-              {locale === 'zh'
-                ? '支援 Enter 送出、邏輯規則產生簡單回覆。'
-                : 'Supports Enter to send and simple rule-based replies.'}
-            </li>
-            <li>
-              {locale === 'zh'
-                ? '可用於展示互動樣式與可用性。'
-                : 'Good for showcasing interaction styling and UX.'}
-            </li>
-          </ul>
+        <aside className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-300">
+          <div>
+            <p className="font-semibold text-slate-200">{copy.optionsTitle}</p>
+            <div className="mt-3 grid gap-2">
+              {quickMessages.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleSelectMessage(item)}
+                  disabled={pending}
+                  className="rounded-xl border border-slate-700 bg-slate-950/50 px-3 py-2 text-left text-sm text-slate-100 transition hover:border-sky-400/60 hover:text-sky-200 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="font-semibold text-slate-200">{copy.notesTitle}</p>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {copy.notes.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
+            </ul>
+          </div>
         </aside>
       </div>
     </section>
